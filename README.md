@@ -2,7 +2,7 @@
 
 A website with multiple mini-games w/ rooms (pun intended).
 
-- Server: NodeJS + [Fastify](https://www.fastify.io/) + Socket.IO (for chatting)
+- Server: NodeJS + [Fastify](https://www.fastify.io/)
 - Client: Vue3
 
 ## How to start (dev mode)
