@@ -1,0 +1,76 @@
+Table user {
+  id serial [pk]
+  username varchar
+  password varchar
+  email varchar
+  is_admin boolean
+}
+
+Ref user_team: user.id <> team.id
+
+// -----
+
+// a Team is independent of a Room
+//   that way we can play in multiple Rooms
+//   with the same Team
+Table team {
+  id serial [pk]
+  name varchar
+  created_at timestamp
+}
+
+Table participating_team {
+  team_id serial [pk, ref: > team.id]
+  room_id serial [pk, ref: > room.id]
+}
+
+// -----
+
+
+Table room {
+  id serial [pk]
+  name varchar
+  state room_state
+  game_mode serial [ref: > game_mode.id]
+  created_at timestamp
+  // lifetime integer(1, 48) // in hour
+  creator_id serial [ref: > user.id]
+  // winner_team_id serial [ref: > team.id]
+}
+
+Enum room_state {
+  SETUP
+  WAITING
+  IN_PROGRESS
+  FINISHED
+}
+
+// -----
+
+Table game_mode {
+  id serial [pk]
+  name varchar
+}
+
+// GAME MODE: BOMBER PARTY
+Table SOMETHING {
+  id serial [pk]
+}
+
+// GAME MODE: QUIZ
+Table question {
+  id serial [pk]
+  title varchar
+  wait_time integer(0, 60) [default: 5] // in seconds
+  hint varchar
+  points integer [default: 1]
+  music_file varchar [not null]
+  room_id serial [ref: > room.id]
+}
+
+Table answer {
+  team_id serial [pk, ref: > team.id]
+  question_id serial [pk, ref: > question.id]
+  choice varchar
+  is_correct boolean
+}
