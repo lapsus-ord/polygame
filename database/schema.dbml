@@ -1,6 +1,7 @@
 Table user {
   id serial [pk]
-  username varchar
+  code bigint
+  username varchar [unique]
   password varchar
   email varchar
   is_admin boolean
@@ -11,31 +12,42 @@ Ref user_team: user.id <> team.id
 // -----
 
 // a Team is independent of a Room
-//   that way we can play in multiple Rooms
-//   with the same Team
+// that way we can play in multiple Rooms
+// with the same Team and archive it
 Table team {
   id serial [pk]
+  code bigint
   name varchar
   created_at timestamp
 }
 
-Table participating_team {
+// a User in a Room
+// no matter if it's in INDIVIDUAL or TEAM game_type
+Table user_in_room {
+  user_id serial [pk, ref: > user.id]
+  room_id serial [pk, ref: > room.id]
+}
+
+// a Team in a Room
+// shows only if the game is in TEAM game_type
+Table team_in_room {
   team_id serial [pk, ref: > team.id]
   room_id serial [pk, ref: > room.id]
 }
 
 // -----
 
-
+// a Room is where the players go and it contains a game
+// It has a code for User to share
 Table room {
   id serial [pk]
+  code bigint
   name varchar
+  is_public boolean
   state room_state
-  game_mode serial [ref: > game_mode.id]
-  created_at timestamp
-  // lifetime integer(1, 48) // in hour
+  game_id serial [ref: > game.id]
   creator_id serial [ref: > user.id]
-  // winner_team_id serial [ref: > team.id]
+  created_at timestamp
 }
 
 Enum room_state {
@@ -47,30 +59,24 @@ Enum room_state {
 
 // -----
 
-Table game_mode {
+// a Game contains it's data and it's definition
+Table game {
+  id serial [pk]
+  definition serial [ref: > game_definition.id]
+  data json
+}
+
+// Definition of a game
+// List of possible games:
+//  - Tusmo / Motus
+//  - Bombparty...
+Table game_definition {
   id serial [pk]
   name varchar
+  game_type game_type
 }
 
-// GAME MODE: BOMBER PARTY
-Table SOMETHING {
-  id serial [pk]
-}
-
-// GAME MODE: QUIZ
-Table question {
-  id serial [pk]
-  title varchar
-  wait_time integer(0, 60) [default: 5] // in seconds
-  hint varchar
-  points integer [default: 1]
-  music_file varchar [not null]
-  room_id serial [ref: > room.id]
-}
-
-Table answer {
-  team_id serial [pk, ref: > team.id]
-  question_id serial [pk, ref: > question.id]
-  choice varchar
-  is_correct boolean
+Enum game_type {
+  INDIVIDUAL
+  TEAM
 }
