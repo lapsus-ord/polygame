@@ -1,13 +1,12 @@
 Table user {
   id serial [pk]
-  code bigint
+  code bigint [unique]
   username varchar [unique]
   password varchar
-  email varchar
   is_admin boolean
 }
 
-Ref user_team: user.id <> team.id
+Ref user_in_team: user.id <> team.id
 
 // -----
 
@@ -16,7 +15,7 @@ Ref user_team: user.id <> team.id
 // with the same Team and archive it
 Table team {
   id serial [pk]
-  code bigint
+  code bigint [unique]
   name varchar
   created_at timestamp
 }
@@ -41,7 +40,7 @@ Table team_in_room {
 // It has a code for User to share
 Table room {
   id serial [pk]
-  code bigint
+  code bigint [unique]
   name varchar
   is_public boolean
   state room_state
