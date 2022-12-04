@@ -1,6 +1,35 @@
-node_modules/
-dist/
-.vscode/
-.idea/
-
+# env variables
 .env.local
+
+# compiled output
+dist/
+node_modules/
+/cypress/videos/
+/cypress/screenshots/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+dbml-error.log
+
+# OS
+.DS_Store
+
+# Tests
+/coverage
+/.nyc_output
+
+# IDEs and editors
+.idea/
+.vscode/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
