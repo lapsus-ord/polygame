@@ -2,35 +2,17 @@
 
 A website with multiple mini-games w/ rooms (pun intended).
 
-- Server: NodeJS + [Fastify](https://www.fastify.io/)
+- Node server: NestJS
 - Client: Vue3
 
-## How to start (dev mode)
+## How to start
 
-1. Install the dependencies:
+...
 
-```sh
-cd ./backend/
-npm install
+## Resources
 
-cd ../frontend/
-npm install
-```
-
-2. Run the backend:
-
-```sh
-cd ./backend/
-npm run dev
-```
-
-3. Run the frontend:
-
-```sh
-cd ./frontend/
-npm run dev
-```
-
-## Credits
-
-- [jklm.fun](https://jklm.fun/): My inspiration & a great website for mini-games
+- [jklm.fun](https://jklm.fun/): my inspiration & a great website for mini-games
+- [NestJS](https://docs.nestjs.com/): perfect Node.js framework for scalable server-side applications
+- [VueJS v3](https://vuejs.org/guide/): cool documentation and intuitive framework for frontend application
+- [Socket.IO](https://socket.io/docs/v4/): more [Using multiple nodes](https://socket.io/docs/v4/using-multiple-nodes/)
+- [SocketCluster](https://socketcluster.io/): an alternative to Socket.IO and more scalable (w/ k8)
