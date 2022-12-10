@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
       POSTGRES_DB: polygame-db
     volumes:
-      - db-data:/var/lib/polygame-db
+      - db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 

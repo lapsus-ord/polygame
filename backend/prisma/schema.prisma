@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  username String @unique
+  password String
+  role     Role   @default(USER)
+
+  createdRooms Room[]
+  teams        Team[]
+  userInRooms  UsersInRooms[]
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+// a Team is independent of a Room
+// that way we can play in multiple Rooms
+// with the same Team and archive it
+model Team {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  code String @unique // length = 10 characters
+  name String
+
+  users       User[]
+  teamInRooms TeamsInRooms[]
+}
+
+// a User in a Room
+// list all parties where a User is currently playing or has played
+model UsersInRooms {
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
+  room     Room     @relation(fields: [roomId], references: [id])
+  roomId   Int
+  joinedAt DateTime @default(now())
+
+  @@id([userId, roomId])
+}
+
+// a Team in a Room
+// list all parties where a Team is currently playing or has played
+model TeamsInRooms {
+  team     Team     @relation(fields: [teamId], references: [id])
+  teamId   Int
+  room     Room     @relation(fields: [roomId], references: [id])
+  roomId   Int
+  joinedAt DateTime @default(now())
+
+  @@id([teamId, roomId])
+}
+
+// a Room is where the players go and it contains a game
+// It has a code for User to share
+model Room {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  code     String    @unique // length = 10 characters
+  name     String
+  isPublic Boolean
+  state    RoomState
+
+  game      Game @relation(fields: [gameId], references: [id])
+  gameId    Int
+  creator   User @relation(fields: [creatorId], references: [id])
+  creatorId Int
+
+  users UsersInRooms[]
+  teams TeamsInRooms[]
+}
+
+enum RoomState {
+  SETUP
+  WAITING
+  IN_PROGRESS
+  FINISHED
+}
+
+// a Game contains it's data and it's definition
+model Game {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  definition   GameDefinition @relation(fields: [definitionId], references: [id])
+  definitionId Int
+  data         Json
+
+  Room Room[]
+}
+
+// Definition of a game
+// List of possible games:
+//  - Tusmo / Motus
+//  - Bombparty...
+model GameDefinition {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name     String
+  gameType GameType
+
+  Game Game[]
+}
+
+enum GameType {
+  INDIVIDUAL
+  TEAM
+}

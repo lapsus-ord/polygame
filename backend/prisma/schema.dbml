@@ -1,6 +1,6 @@
 Table user {
   id serial [pk]
-  code bigint [unique]
+  code varchar [unique]
   username varchar [unique]
   password varchar
   is_admin boolean
@@ -8,14 +8,12 @@ Table user {
 
 Ref user_in_team: user.id <> team.id
 
-// -----
-
 // a Team is independent of a Room
 // that way we can play in multiple Rooms
 // with the same Team and archive it
 Table team {
   id serial [pk]
-  code bigint [unique]
+  code varchar [unique]
   name varchar
   created_at timestamp
 }
@@ -34,13 +32,11 @@ Table team_in_room {
   room_id serial [pk, ref: > room.id]
 }
 
-// -----
-
 // a Room is where the players go and it contains a game
 // It has a code for User to share
 Table room {
   id serial [pk]
-  code bigint [unique]
+  code varchar [unique]
   name varchar
   is_public boolean
   state room_state

@@ -1,4 +1,5 @@
 # env variables
+.env
 .env.local
 
 # compiled output
