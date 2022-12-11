@@ -1,48 +1,46 @@
-Table user {
+Table users {
   id serial [pk]
-  code varchar [unique]
   username varchar [unique]
   password varchar
   is_admin boolean
 }
 
-Ref user_in_team: user.id <> team.id
+Ref users_in_teams: users.id <> teams.id
 
 // a Team is independent of a Room
 // that way we can play in multiple Rooms
 // with the same Team and archive it
-Table team {
+Table teams {
   id serial [pk]
   code varchar [unique]
   name varchar
-  created_at timestamp
 }
 
 // a User in a Room
 // no matter if it's in INDIVIDUAL or TEAM game_type
-Table user_in_room {
-  user_id serial [pk, ref: > user.id]
-  room_id serial [pk, ref: > room.id]
+Table users_in_rooms {
+  user_id serial [pk, ref: > users.id]
+  room_id serial [pk, ref: > rooms.id]
 }
 
 // a Team in a Room
 // shows only if the game is in TEAM game_type
-Table team_in_room {
-  team_id serial [pk, ref: > team.id]
-  room_id serial [pk, ref: > room.id]
+Table teams_in_rooms {
+  team_id serial [pk, ref: > teams.id]
+  room_id serial [pk, ref: > rooms.id]
 }
 
 // a Room is where the players go and it contains a game
 // It has a code for User to share
-Table room {
+Table rooms {
   id serial [pk]
   code varchar [unique]
   name varchar
   is_public boolean
   state room_state
-  game_id serial [ref: > game.id]
-  creator_id serial [ref: > user.id]
-  created_at timestamp
+
+  game_id serial [ref: > games.id]
+  creator_id serial [ref: > users.id]
 }
 
 Enum room_state {
@@ -55,9 +53,9 @@ Enum room_state {
 // -----
 
 // a Game contains it's data and it's definition
-Table game {
+Table games {
   id serial [pk]
-  definition serial [ref: > game_definition.id]
+  definition serial [ref: > game_definitions.id]
   data json
 }
 
@@ -65,7 +63,7 @@ Table game {
 // List of possible games:
 //  - Tusmo / Motus
 //  - Bombparty...
-Table game_definition {
+Table game_definitions {
   id serial [pk]
   name varchar
   game_type game_type

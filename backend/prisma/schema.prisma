@@ -19,6 +19,8 @@ model User {
   createdRooms Room[]
   teams        Team[]
   userInRooms  UsersInRooms[]
+
+  @@map("users")
 }
 
 enum Role {
@@ -39,6 +41,8 @@ model Team {
 
   users       User[]
   teamInRooms TeamsInRooms[]
+
+  @@map("teams")
 }
 
 // a User in a Room
@@ -51,6 +55,7 @@ model UsersInRooms {
   joinedAt DateTime @default(now())
 
   @@id([userId, roomId])
+  @@map("users_in_rooms")
 }
 
 // a Team in a Room
@@ -63,6 +68,7 @@ model TeamsInRooms {
   joinedAt DateTime @default(now())
 
   @@id([teamId, roomId])
+  @@map("teams_in_rooms")
 }
 
 // a Room is where the players go and it contains a game
@@ -84,6 +90,8 @@ model Room {
 
   users UsersInRooms[]
   teams TeamsInRooms[]
+
+  @@map("rooms")
 }
 
 enum RoomState {
@@ -104,6 +112,8 @@ model Game {
   data         Json
 
   Room Room[]
+
+  @@map("games")
 }
 
 // Definition of a game
@@ -119,6 +129,8 @@ model GameDefinition {
   gameType GameType
 
   Game Game[]
+
+  @@map("game_definitions")
 }
 
 enum GameType {
