@@ -18,7 +18,7 @@ model User {
 
   createdRooms Room[]
   teams        Team[]
-  userInRooms  UsersInRooms[]
+  inRooms      UsersInRooms[]
 
   @@map("users")
 }
@@ -39,8 +39,8 @@ model Team {
   code String @unique // length = 10 characters
   name String
 
-  users       User[]
-  teamInRooms TeamsInRooms[]
+  users   User[]
+  inRooms TeamsInRooms[]
 
   @@map("teams")
 }

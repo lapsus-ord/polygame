@@ -4,14 +4,20 @@ import {
   Injectable,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { User } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { Role } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index';
-import { LoginUserDto, RegisterUserDto } from './dto/auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { LoginUserDto, RegisterUserDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwt: JwtService,
+    private config: ConfigService
+  ) {}
 
   async register(dto: RegisterUserDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
@@ -24,10 +30,11 @@ export class AuthService {
         },
       });
 
-      return {
-        username: createdUser.username,
-        createdAt: createdUser.createdAt,
-      };
+      return this.signToken(
+        createdUser.id,
+        createdUser.username,
+        createdUser.role
+      );
     } catch (error) {
       if (!(error instanceof PrismaClientKnownRequestError)) throw error;
       if (error.code !== 'P2002') throw error;
@@ -40,28 +47,32 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { username: dto.username },
     });
-    if (null === user) throw new ForbiddenException();
+    if (null === user) throw new ForbiddenException('Wrong credentials');
 
     const isSamePassword = await bcrypt.compare(dto.password, user.password);
-    if (!isSamePassword) throw new ForbiddenException();
+    if (!isSamePassword) throw new ForbiddenException('Wrong credentials');
 
-    return {
-      username: user.username,
-      createdAt: user.createdAt,
-    };
+    return this.signToken(user.id, user.username, user.role);
   }
 
-  async validateUser(login: string, pass: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        username: login,
-      },
-    });
-    if (!user) return null;
+  async signToken(
+    userId: number,
+    username: string,
+    role: Role
+  ): Promise<{ access_token: string }> {
+    const payload = {
+      sub: userId,
+      username: username,
+      role: role,
+    };
 
-    const isSamePassword = await bcrypt.compare(pass, user.password);
-    if (!isSamePassword) return null;
+    const options: JwtSignOptions = {
+      expiresIn: '15m',
+      secret: this.config.get<string>('JWT_SECRET'),
+    };
 
-    return user;
+    const token = await this.jwt.signAsync(payload, options);
+
+    return { access_token: token };
   }
 }
