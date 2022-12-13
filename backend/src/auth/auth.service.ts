@@ -6,7 +6,6 @@ import {
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { Role } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginUserDto, RegisterUserDto } from './dto/auth.dto';
@@ -30,11 +29,7 @@ export class AuthService {
         },
       });
 
-      return this.signToken(
-        createdUser.id,
-        createdUser.username,
-        createdUser.role
-      );
+      return this.signToken(createdUser.id);
     } catch (error) {
       if (!(error instanceof PrismaClientKnownRequestError)) throw error;
       if (error.code !== 'P2002') throw error;
@@ -52,19 +47,11 @@ export class AuthService {
     const isSamePassword = await bcrypt.compare(dto.password, user.password);
     if (!isSamePassword) throw new ForbiddenException('Wrong credentials');
 
-    return this.signToken(user.id, user.username, user.role);
+    return this.signToken(user.id);
   }
 
-  async signToken(
-    userId: number,
-    username: string,
-    role: Role
-  ): Promise<{ access_token: string }> {
-    const payload = {
-      sub: userId,
-      username: username,
-      role: role,
-    };
+  async signToken(userId: number): Promise<{ access_token: string }> {
+    const payload = { sub: userId };
 
     const options: JwtSignOptions = {
       expiresIn: '15m',

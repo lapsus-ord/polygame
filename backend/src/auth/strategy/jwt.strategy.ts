@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { FilteredUser } from 'src/users/dto/filtered-user.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(config: ConfigService, private prisma: PrismaService) {
+  constructor(config: ConfigService, private usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -14,17 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any): Promise<{} | null> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: payload.sub,
-      },
-    });
-    if (null === user) return user;
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...filteredUser } = user;
-
-    return filteredUser;
+  validate(payload: any): Promise<FilteredUser | null> {
+    return this.usersService.find(payload.sub);
   }
 }
