@@ -6,43 +6,66 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { GetUser } from 'src/auth/decorator/user.decorator';
-import { IsAdminGuard } from 'src/auth/guard/admin.guard';
-import { IsLoggedGuard } from 'src/auth/guard/jwt.guard';
-import { UsersService } from './users.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index';
+import { UserOwnsGuard } from 'src/auth/guard/user-owns.guard';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { FilteredUser } from './dto/filtered-user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private prisma: PrismaService) {}
 
-  @UseGuards(IsLoggedGuard)
-  @Get('me')
-  getUserMe(@GetUser() user: User) {
-    return user;
-  }
-
-  @UseGuards(IsAdminGuard)
-  @Get(':id')
-  async getUserInfoById(@Param('id') userId: string) {
-    const user = await this.usersService.find(parseInt(userId));
-    if (null === user) throw new NotFoundException();
-
-    return user;
-  }
-
-  @UseGuards(IsAdminGuard)
-  @Delete(':id')
-  async deleteUserById(@Param('id') userId: string) {
-    const user = await this.usersService.delete(parseInt(userId));
-    if (null === user) throw new NotFoundException();
-
-    return user;
-  }
-
-  @UseGuards(IsAdminGuard)
+  @UseGuards(UserOwnsGuard)
   @Get()
   getUsers() {
-    return this.usersService.findAll();
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        username: true,
+        role: true,
+      },
+    });
+  }
+
+  @UseGuards(UserOwnsGuard)
+  @Get(':userId')
+  async getUserInfoById(@Param('userId') userId: string) {
+    const user: FilteredUser | null = await this.prisma.user.findUnique({
+      where: { id: parseInt(userId) },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        username: true,
+        role: true,
+      },
+    });
+    if (null === user) throw new NotFoundException();
+
+    return user;
+  }
+
+  @UseGuards(UserOwnsGuard)
+  @Delete(':userId')
+  async deleteUserById(@Param('userId') userId: string) {
+    try {
+      return await this.prisma.user.delete({
+        where: { id: parseInt(userId) },
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          username: true,
+          role: true,
+        },
+      });
+    } catch (error) {
+      if (!(error instanceof PrismaClientKnownRequestError)) throw error;
+      if (error.code !== 'P2025') throw error;
+
+      throw new NotFoundException();
+    }
   }
 }
