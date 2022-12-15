@@ -107,9 +107,9 @@ model Game {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  definition   GameDefinition @relation(fields: [definitionId], references: [id])
-  definitionId Int
-  data         Json
+  definition     GameDefinition @relation(fields: [definitionSlug], references: [slug])
+  definitionSlug String
+  data           Json
 
   Room Room[]
 
@@ -121,12 +121,13 @@ model Game {
 //  - Tusmo / Motus
 //  - Bombparty...
 model GameDefinition {
-  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name     String
-  gameType GameType
+  slug      String   @unique
+  name      String
+  available Boolean  @default(false)
+  gameType  GameType
 
   Game Game[]
 
