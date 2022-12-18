@@ -9,15 +9,15 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   username String @unique
   password String
   role     Role   @default(USER)
 
   createdRooms Room[]
-  teams        Team[]
+  teams        UsersInTeams[]
   inRooms      UsersInRooms[]
 
   @@map("users")
@@ -28,18 +28,29 @@ enum Role {
   USER
 }
 
+model UsersInTeams {
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int      @map("user_id")
+  team     Team     @relation(fields: [teamId], references: [id])
+  teamId   Int      @map("team_id")
+  joinedAt DateTime @default(now())
+
+  @@id([userId, teamId])
+  @@map("users_in_teams")
+}
+
 // a Team is independent of a Room
 // that way we can play in multiple Rooms
 // with the same Team and archive it
 model Team {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   code String @unique // length = 10 characters
   name String
 
-  users   User[]
+  users   UsersInTeams[]
   inRooms TeamsInRooms[]
 
   @@map("teams")
@@ -49,10 +60,10 @@ model Team {
 // list all parties where a User is currently playing or has played
 model UsersInRooms {
   user     User     @relation(fields: [userId], references: [id])
-  userId   Int
+  userId   Int      @map("user_id")
   room     Room     @relation(fields: [roomId], references: [id])
-  roomId   Int
-  joinedAt DateTime @default(now())
+  roomId   Int      @map("room_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
 
   @@id([userId, roomId])
   @@map("users_in_rooms")
@@ -62,9 +73,9 @@ model UsersInRooms {
 // list all parties where a Team is currently playing or has played
 model TeamsInRooms {
   team     Team     @relation(fields: [teamId], references: [id])
-  teamId   Int
+  teamId   Int      @map("team_id")
   room     Room     @relation(fields: [roomId], references: [id])
-  roomId   Int
+  roomId   Int      @map("room_id")
   joinedAt DateTime @default(now())
 
   @@id([teamId, roomId])
@@ -75,18 +86,18 @@ model TeamsInRooms {
 // It has a code for User to share
 model Room {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   code     String    @unique // length = 10 characters
   name     String
-  isPublic Boolean
+  isPublic Boolean   @map("is_public")
   state    RoomState
 
   game      Game @relation(fields: [gameId], references: [id])
-  gameId    Int
+  gameId    Int  @map("game_id")
   creator   User @relation(fields: [creatorId], references: [id])
-  creatorId Int
+  creatorId Int  @map("creator_id")
 
   users UsersInRooms[]
   teams TeamsInRooms[]
@@ -95,7 +106,6 @@ model Room {
 }
 
 enum RoomState {
-  SETUP
   WAITING
   IN_PROGRESS
   FINISHED
@@ -104,11 +114,11 @@ enum RoomState {
 // a Game contains it's data and it's definition
 model Game {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   definition     GameDefinition @relation(fields: [definitionSlug], references: [slug])
-  definitionSlug String
+  definitionSlug String         @map("definition_slug")
   data           Json
 
   Room Room[]
@@ -121,13 +131,13 @@ model Game {
 //  - Tusmo / Motus
 //  - Bombparty...
 model GameDefinition {
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  slug      String   @unique
-  name      String
-  available Boolean  @default(false)
-  gameType  GameType
+  slug     String   @unique
+  name     String
+  enabled  Boolean  @default(false)
+  gameType GameType @map("game_type")
 
   Game Game[]
 

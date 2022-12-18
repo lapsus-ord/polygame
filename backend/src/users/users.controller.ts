@@ -6,66 +6,81 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index';
-import { UserOwnsGuard } from 'src/auth/guard/user-owns.guard';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { AdminGuard } from 'src/auth/guard/admin.guard';
+import { UsersService } from './users.service';
+import { RoomsService } from 'src/rooms/rooms.service';
 import { FilteredUser } from './dto/filtered-user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private prisma: PrismaService) {}
+  constructor(private users: UsersService, private rooms: RoomsService) {}
 
-  @UseGuards(UserOwnsGuard)
+  @UseGuards(AdminGuard)
   @Get()
-  getUsers() {
-    return this.prisma.user.findMany({
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        username: true,
-        role: true,
-      },
+  async findAll(): Promise<FilteredUser[]> {
+    const users = await this.users.findAll();
+    const filteredUsers = users.map((user) => {
+      return {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      };
     });
+
+    return filteredUsers;
   }
 
-  @UseGuards(UserOwnsGuard)
-  @Get(':userId')
-  async getUserInfoById(@Param('userId') userId: string) {
-    const user: FilteredUser | null = await this.prisma.user.findUnique({
-      where: { id: parseInt(userId) },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        username: true,
-        role: true,
-      },
-    });
+  @UseGuards(AdminGuard)
+  @Get(':id')
+  async findById(@Param('id') id: string): Promise<FilteredUser> {
+    const user = await this.users.findById(id);
     if (null === user) throw new NotFoundException();
 
-    return user;
+    return {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 
-  @UseGuards(UserOwnsGuard)
-  @Delete(':userId')
-  async deleteUserById(@Param('userId') userId: string) {
-    try {
-      return await this.prisma.user.delete({
-        where: { id: parseInt(userId) },
-        select: {
-          id: true,
-          createdAt: true,
-          updatedAt: true,
-          username: true,
-          role: true,
-        },
-      });
-    } catch (error) {
-      if (!(error instanceof PrismaClientKnownRequestError)) throw error;
-      if (error.code !== 'P2025') throw error;
+  @UseGuards(AdminGuard)
+  @Get(':id/rooms')
+  async findRoomsOfUserById(@Param('id') id: string) {
+    const userRooms = await this.rooms.findAll({
+      creator: { id: parseInt(id) },
+    });
 
-      throw new NotFoundException();
-    }
+    const userRoomsFiltered = userRooms.map((room) => {
+      return {
+        code: room.code,
+        name: room.name,
+        state: room.state,
+        creator: room.creator.username,
+        game: room.game.definition.name,
+        createdAt: room.createdAt,
+        updatedAt: room.updatedAt,
+      };
+    });
+
+    return userRoomsFiltered;
+  }
+
+  @UseGuards(AdminGuard)
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    const user = await this.users.remove(id);
+    if (null === user) throw new NotFoundException();
+
+    return {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 }

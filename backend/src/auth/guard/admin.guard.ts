@@ -8,7 +8,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Role } from '@prisma/client';
 
 @Injectable()
-export class UserOwnsGuard extends AuthGuard('jwt') {
+export class AdminGuard extends AuthGuard('jwt') {
   private params: any | null = null;
 
   canActivate(context: ExecutionContext) {
@@ -22,7 +22,7 @@ export class UserOwnsGuard extends AuthGuard('jwt') {
     if (undefined === user.role) throw new UnauthorizedException();
 
     // Allow access if User owns himself
-    if (this.params.userId && user.id === parseInt(this.params.userId)) {
+    if (this.params.userId && user.id === parseInt(this.params.id)) {
       return user;
     }
 
