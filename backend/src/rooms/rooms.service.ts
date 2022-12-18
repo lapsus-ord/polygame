@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRoomDto } from './dto/rooms.dto';
 import { GameDefinition, Prisma, RoomState, User } from '@prisma/client';
-import { GameStrategy } from 'src/games/strategy/game-strategy.service';
+import { GameStrategy } from 'src/games/strategies/game-strategy.service';
 
 const nanoid = import('nanoid/async');
 

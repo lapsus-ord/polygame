@@ -7,4 +7,8 @@ export class BombpartyStrategy implements GameStrategyInterface {
   buildConfig(): Prisma.JsonObject {
     return { config: 'test config' };
   }
+
+  handleRequest(): string {
+    return '';
+  }
 }
