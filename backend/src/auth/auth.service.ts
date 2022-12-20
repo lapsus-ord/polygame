@@ -5,12 +5,12 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/index';
+import { Role, User } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2';
-import { LoginUserDto, RegisterUserDto } from './dto/auth.dto';
-import { Tokens } from './types/tokens.type';
+import { LoginUserDto, RegisterUserDto } from './types/auth.dto';
+import { Tokens } from './types/jwt.type';
 
 @Injectable()
 export class AuthService {
@@ -62,7 +62,12 @@ export class AuthService {
     return tokens;
   }
 
-  // Helper functions
+  async removeRefreshToken(user: User): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken: null },
+    });
+  }
 
   async getTokens(
     userId: number,

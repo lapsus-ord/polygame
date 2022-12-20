@@ -20,8 +20,8 @@ model User {
 
   username     String  @unique
   password     String
-  role         Role    @default(USER)
   refreshToken String? @map("refresh_token")
+  role         Role    @default(USER)
 
   createdRooms Room[]
   teams        UsersInTeams[]

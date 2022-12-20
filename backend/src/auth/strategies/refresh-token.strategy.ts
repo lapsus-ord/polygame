@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Request } from 'express';
-import { ConfigService } from '@nestjs/config';
+import { JwtPayload } from '../types/jwt.type';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -17,8 +19,12 @@ export class RefreshTokenStrategy extends PassportStrategy(
     });
   }
 
-  validate(req: Request, payload: any) {
-    const refreshToken = req.get('Authorization')?.replace('Bearer', '').trim();
+  validate(req: Request, payload: JwtPayload) {
+    const authorizationHeader = req.get('Authorization');
+    if (!authorizationHeader) return null;
+
+    const refreshToken = authorizationHeader.replace('Bearer', '').trim();
+
     return { ...payload, refreshToken };
   }
 }

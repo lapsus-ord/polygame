@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
@@ -11,16 +11,16 @@ export class UsersService {
     return this.prisma.user.findMany({ where });
   }
 
-  async findById(id: string): Promise<User | null> {
+  async findById(id: number): Promise<User | null> {
     return this.prisma.user.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: id },
     });
   }
 
-  async remove(id: string): Promise<User | null> {
+  async remove(id: number): Promise<User | null> {
     try {
       return this.prisma.user.delete({
-        where: { id: parseInt(id) },
+        where: { id: id },
       });
     } catch (error) {
       if (!(error instanceof PrismaClientKnownRequestError)) throw error;

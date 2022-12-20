@@ -1,15 +1,18 @@
+-- --------------
+-- Delete generated game when room is deleted
+
 CREATE OR REPLACE FUNCTION public.delete_game()
-  RETURNS TRIGGER
-  LANGUAGE plpgsql
-  AS
+    RETURNS TRIGGER
+AS
 $$
 BEGIN
-  DELETE FROM games g WHERE g.id = OLD.gameId;
-  RETURN OLD;
+    DELETE FROM public.games g WHERE g.id = OLD.game_id;
+    RETURN OLD;
 END;
-$$;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER delete_game_when_room_deleted
-  AFTER DELETE ON rooms
-  FOR EACH ROW
-  EXECUTE PROCEDURE delete_game();
+    AFTER DELETE
+    ON public.rooms
+    FOR EACH ROW
+EXECUTE PROCEDURE public.delete_game();
