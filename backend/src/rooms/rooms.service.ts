@@ -1,16 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import {
-  GameDefinition,
-  GameType,
-  Prisma,
-  Room,
-  RoomState,
-  User,
-} from '@prisma/client';
+import { GameDefinition, Prisma, Room, RoomState, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRoomDto } from './types/create-room.dto';
 import { GameStrategy } from 'src/games/strategies/game-strategy.service';
-import { GameRoomType } from './types/rooms.type';
 
 const nanoid = import('nanoid/async');
 
@@ -36,12 +28,7 @@ export class RoomsService {
             },
           },
         },
-        _count: {
-          select: {
-            users: true,
-            teams: true,
-          },
-        },
+        _count: { select: { users: true } },
         createdAt: true,
         updatedAt: true,
       },
@@ -69,12 +56,7 @@ export class RoomsService {
             },
           },
         },
-        _count: {
-          select: {
-            users: true,
-            teams: true,
-          },
-        },
+        _count: { select: { users: true } },
         createdAt: true,
         updatedAt: true,
       },
@@ -85,7 +67,8 @@ export class RoomsService {
     // Create a unique room code like "a7u8be5u-m"
     const roomCode = await this.getRandomCode();
 
-    const gameRoom = await this.prisma.room.create({
+    const { config, data } = this.gameStrategy.init(gameDefinition.slug);
+    return this.prisma.room.create({
       data: {
         code: roomCode,
         isPublic: dto.isPublic,
@@ -94,10 +77,12 @@ export class RoomsService {
         creator: { connect: { id: user.id } },
         game: {
           create: {
-            data: this.gameStrategy.buildConfig(dto.gameDefinitionSlug),
+            config: config,
+            data: data,
             definition: { connect: { slug: gameDefinition.slug } },
           },
         },
+        users: { create: { user: { connect: { id: user.id } } } },
       },
       select: {
         code: true,
@@ -111,43 +96,11 @@ export class RoomsService {
             },
           },
         },
-        _count: {
-          select: {
-            users: true,
-            teams: true,
-          },
-        },
+        _count: { select: { users: true } },
         createdAt: true,
         updatedAt: true,
       },
     });
-
-    if (gameDefinition.gameType === GameType.INDIVIDUAL) {
-      await this.prisma.usersInRooms.create({
-        data: {
-          user: { connect: { id: user.id } },
-          room: { connect: { code: roomCode } },
-        },
-      });
-    }
-
-    if (gameDefinition.gameType === GameType.TEAM) {
-      const team = await this.prisma.team.create({
-        data: {
-          code: await this.getRandomCode(),
-          name: `${user.updatedAt}'s Team`,
-        },
-      });
-
-      await this.prisma.teamsInRooms.create({
-        data: {
-          team: { connect: { code: team.code } },
-          room: { connect: { code: gameRoom.code } },
-        },
-      });
-    }
-
-    return gameRoom;
   }
 
   remove(code: string) {

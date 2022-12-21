@@ -8,13 +8,16 @@ export class GameStrategy {
     bombparty: BombpartyStrategy,
   };
 
-  buildConfig(strategySlug: string): Prisma.JsonObject {
+  init(strategySlug: string): {
+    config: Prisma.JsonObject;
+    data: Prisma.JsonObject;
+  } {
     const strategy = this.strategies[strategySlug];
     if (undefined === strategy) {
       throw new NotFoundException('game definition not found');
     }
 
-    return new strategy().buildConfig();
+    return new strategy().init();
   }
 }
 

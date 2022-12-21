@@ -12,5 +12,4 @@ export type RoomType = {
 export type GameRoomType = RoomType & {
   game: string;
   nbOfUsers: number;
-  nbOfTeams: number;
 };

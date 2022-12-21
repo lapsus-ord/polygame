@@ -38,7 +38,6 @@ export class RoomsController {
         creator: gameRoom.creator.username,
         game: gameRoom.game.definition.name,
         nbOfUsers: gameRoom._count.users,
-        nbOfTeams: gameRoom._count.teams,
         createdAt: gameRoom.createdAt,
         updatedAt: gameRoom.updatedAt,
       };
@@ -57,7 +56,6 @@ export class RoomsController {
       creator: gameRoom.creator.username,
       game: gameRoom.game.definition.name,
       nbOfUsers: gameRoom._count.users,
-      nbOfTeams: gameRoom._count.teams,
       createdAt: gameRoom.createdAt,
       updatedAt: gameRoom.updatedAt,
     };
@@ -88,7 +86,6 @@ export class RoomsController {
       creator: room.creator.username,
       game: room.game.definition.name,
       nbOfUsers: room._count.users,
-      nbOfTeams: room._count.teams,
       createdAt: room.createdAt,
       updatedAt: room.updatedAt,
     };

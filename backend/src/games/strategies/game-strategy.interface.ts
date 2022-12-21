@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 
 export interface GameStrategyInterface {
-  buildConfig(): Prisma.JsonObject;
+  init(): { config: Prisma.JsonObject; data: Prisma.JsonObject };
 
   handleRequest(): string;
 }
