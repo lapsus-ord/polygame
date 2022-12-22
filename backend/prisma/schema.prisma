@@ -39,7 +39,7 @@ enum Role {
 model UsersInRooms {
   user     User     @relation(fields: [userId], references: [id])
   userId   Int      @map("user_id")
-  room     Room     @relation(fields: [roomId], references: [id])
+  room     Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
   roomId   Int      @map("room_id")
   joinedAt DateTime @default(now()) @map("joined_at")
 

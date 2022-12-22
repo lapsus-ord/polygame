@@ -1,8 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { GameDefinition, Prisma, Room, RoomState, User } from '@prisma/client';
+import {
+  GameDefinition,
+  Prisma,
+  Room,
+  RoomState,
+  User,
+  UsersInRooms,
+} from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRoomDto } from './types/create-room.dto';
 import { GameStrategy } from 'src/games/strategies/game-strategy.service';
+import { PrismaRoomType } from './types/rooms.type';
 
 const nanoid = import('nanoid/async');
 
@@ -13,57 +21,35 @@ export class RoomsService {
     private gameStrategy: GameStrategy
   ) {}
 
-  findAllGameRoom(where?: Prisma.RoomWhereInput) {
+  findAll(where?: Prisma.RoomWhereInput): Promise<PrismaRoomType[]> {
     return this.prisma.room.findMany({
       where,
-      select: {
-        code: true,
-        name: true,
-        state: true,
-        creator: { select: { username: true } },
-        game: {
-          select: {
-            definition: {
-              select: { name: true },
-            },
-          },
-        },
+      include: {
+        creator: { select: { id: true, username: true } },
+        game: { select: { definitionSlug: true } },
+        users: { select: { user: { select: { id: true, username: true } } } },
         _count: { select: { users: true } },
-        createdAt: true,
-        updatedAt: true,
       },
     });
   }
 
-  findRoomByCode(code: string): Promise<Room | null> {
+  findByCode(code: string): Promise<PrismaRoomType | null> {
     return this.prisma.room.findUnique({
       where: { code: code },
-    });
-  }
-
-  findGameRoomByCode(code: string) {
-    return this.prisma.room.findUnique({
-      where: { code: code },
-      select: {
-        code: true,
-        name: true,
-        state: true,
-        creator: { select: { username: true } },
-        game: {
-          select: {
-            definition: {
-              select: { name: true },
-            },
-          },
-        },
+      include: {
+        creator: { select: { id: true, username: true } },
+        game: { select: { definitionSlug: true } },
+        users: { select: { user: { select: { id: true, username: true } } } },
         _count: { select: { users: true } },
-        createdAt: true,
-        updatedAt: true,
       },
     });
   }
 
-  async create(user: User, dto: CreateRoomDto, gameDefinition: GameDefinition) {
+  async create(
+    user: User,
+    dto: CreateRoomDto,
+    gameDefinition: GameDefinition
+  ): Promise<PrismaRoomType> {
     // Create a unique room code like "a7u8be5u-m"
     const roomCode = await this.getRandomCode();
 
@@ -84,37 +70,64 @@ export class RoomsService {
         },
         users: { create: { user: { connect: { id: user.id } } } },
       },
-      select: {
-        code: true,
-        name: true,
-        state: true,
-        creator: { select: { username: true } },
-        game: {
-          select: {
-            definition: {
-              select: { name: true },
-            },
-          },
-        },
+      include: {
+        creator: { select: { id: true, username: true } },
+        game: { select: { definitionSlug: true } },
+        users: { select: { user: { select: { id: true, username: true } } } },
         _count: { select: { users: true } },
-        createdAt: true,
-        updatedAt: true,
       },
     });
   }
 
-  remove(code: string) {
+  remove(code: string): Promise<PrismaRoomType> {
     return this.prisma.room.delete({
       where: { code: code },
-      select: {
-        code: true,
-        name: true,
-        state: true,
-        creator: { select: { username: true } },
-        createdAt: true,
-        updatedAt: true,
+      include: {
+        creator: { select: { id: true, username: true } },
+        game: { select: { definitionSlug: true } },
+        users: { select: { user: { select: { id: true, username: true } } } },
+        _count: { select: { users: true } },
       },
     });
+  }
+
+  join(user: User, room: Room): Promise<UsersInRooms> {
+    return this.prisma.usersInRooms.create({
+      data: {
+        user: { connect: { id: user.id } },
+        room: { connect: { id: room.id } },
+      },
+    });
+  }
+
+  leave(user: User, room: Room): Promise<UsersInRooms> {
+    return this.prisma.usersInRooms.delete({
+      where: {
+        userId_roomId: {
+          userId: user.id,
+          roomId: room.id,
+        },
+      },
+    });
+  }
+
+  getNbOfUsersInTheRoom(room: Room): Promise<number> {
+    return this.prisma.usersInRooms.count({
+      where: { roomId: room.id },
+    });
+  }
+
+  async isUserInTheRoom(user: User, room: Room): Promise<boolean> {
+    const row = await this.prisma.usersInRooms.findUnique({
+      where: {
+        userId_roomId: {
+          userId: user.id,
+          roomId: room.id,
+        },
+      },
+    });
+
+    return !!row;
   }
 
   private async getRandomCode(): Promise<string> {

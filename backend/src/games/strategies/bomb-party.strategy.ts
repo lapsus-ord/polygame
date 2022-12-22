@@ -4,8 +4,8 @@ import { GameStrategyInterface } from './game-strategy.interface';
 
 @Injectable()
 export class BombpartyStrategy implements GameStrategyInterface {
-  buildConfig(): Prisma.JsonObject {
-    return { config: 'test config' };
+  init(): { config: Prisma.JsonObject; data: Prisma.JsonObject } {
+    return { config: {}, data: {} };
   }
 
   handleRequest(): string {
