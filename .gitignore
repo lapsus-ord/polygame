@@ -4,14 +4,18 @@
 
 # compiled output
 dist/
+.output/
 node_modules/
-/cypress/videos/
-/cypress/screenshots/
 dbml/
+
+# nuxt
+.nuxt/
+.nitro/
+.cache/
 
 # Logs
 logs
-*.log
+*.log*
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
