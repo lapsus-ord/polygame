@@ -1,38 +1,25 @@
 <template>
-  <nav class="navbar">
+  <nav class="navbar sm:px-8">
     <div class="navbar-start flex gap-4">
       <NuxtLink to="/" class="btn btn-ghost gap-2">
-        <Icon name="logos:partytown-icon" size="2rem" />
-        <h1 class="tracking-wider text-accent">polygame</h1>
+        <Icon name="logos:partytown-icon" size="42px" />
+        <h1 class="hidden sm:block tracking-wider text-3xl">
+          <span id="header-1st">poly</span>
+          <span id="header-2nd">game</span>
+        </h1>
       </NuxtLink>
     </div>
 
-    <div class="navbar-end">
-      <div class="dropdown dropdown-end">
-        <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-          <div class="w-10 rounded-full">
-            <img src="https://placeimg.com/80/80/people" alt="profile image" />
-          </div>
-        </label>
-        <ul
-          tabindex="0"
-          class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-accent rounded-box w-52"
-        >
-          <li>
-            <NuxtLink
-              to="/users/me"
-              class="text-accent-content hover:bg-accent-focus"
-            >
-              Profil
-            </NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/" class="text-accent-content hover:bg-accent-focus">
-              Se déconnecter
-            </NuxtLink>
-          </li>
-        </ul>
-      </div>
-    </div>
+    <NavbarMenu class="navbar-end" />
   </nav>
 </template>
+
+<style scoped>
+#header-1st {
+  color: #21c1ff;
+}
+
+#header-2nd {
+  color: #ffb86b;
+}
+</style>

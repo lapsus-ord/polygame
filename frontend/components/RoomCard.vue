@@ -4,7 +4,7 @@
       class="card card-compact bg-neutral text-neutral-content hover:shadow-xl animate-zoom"
     >
       <div class="card-body">
-        <div class="card-title justify-between">
+        <div class="card-title justify-between gap-0">
           <h2>{{ room.name }}</h2>
           <span
             class="font-light text-sm bg-neutral-content text-neutral rounded px-1"

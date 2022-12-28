@@ -8,8 +8,8 @@
       <NuxtPage />
     </NuxtLayout>
 
-    <footer class="footer footer-center py-2 bg-neutral text-neutral-content">
-      <div class="items-center grid-flow-col">
+    <footer class="footer footer-center py-2 bg-neutral z-10">
+      <div class="items-center grid-flow-col text-neutral-content">
         <Icon name="logos:partytown-icon" size="20px" />
         <p>
           Made with <Icon name="mdi:cards-heart" /> by
