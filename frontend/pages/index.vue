@@ -1,22 +1,121 @@
 <template>
   <div>
-    <div class="p-10">
-      <div class="card w-96 bg-base-100 shadow-xl">
-        <figure>
-          <img src="https://placeimg.com/400/225/arch" alt="Shoes" />
-        </figure>
-        <div class="card-body">
-          <h2 class="card-title">Shoes!</h2>
-          <p>If a dog chews shoes whose shoes does he choose?</p>
-          <div class="card-actions justify-end">
-            <button class="btn btn-primary">Buy Now</button>
-          </div>
-        </div>
+    <article class="border-accent border-2 rounded-md px-6 pb-4 mb-4">
+      <h1 class="mb-4 text-accent">Vos parties&nbsp;:</h1>
+
+      <div class="rooms-grid">
+        <RoomCard v-for="room in yourRooms" :key="room.code" :room="room" />
       </div>
-    </div>
+    </article>
+
+    <article class="px-6 pb-4">
+      <h1 class="mb-4">Parties en cours&nbsp;:</h1>
+
+      <div class="rooms-grid">
+        <RoomCard v-for="room in publicRooms" :key="room.code" :room="room" />
+      </div>
+    </article>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const yourRooms: {
+  code: string;
+  name: string;
+  state: string;
+  gameDefinition: string;
+  nbOfUsers: number;
+}[] = [
+  {
+    code: 'r5t4r4trt',
+    name: 'Chez René',
+    state: 'PLAYING',
+    gameDefinition: 'Bombparty',
+    nbOfUsers: 6,
+  },
+  {
+    code: 'r5t4r4trt',
+    name: 'Chez René',
+    state: 'PLAYING',
+    gameDefinition: 'Bombparty',
+    nbOfUsers: 6,
+  },
+  {
+    code: 'r5t4r4trt',
+    name: 'Chez René',
+    state: 'PLAYING',
+    gameDefinition: 'Bombparty',
+    nbOfUsers: 6,
+  },
+];
+const publicRooms: {
+  code: string;
+  name: string;
+  state: string;
+  gameDefinition: string;
+  nbOfUsers: number;
+}[] = [
+  {
+    code: 'r5t4r4trt',
+    name: 'Chez René',
+    state: 'PLAYING',
+    gameDefinition: 'Bombparty',
+    nbOfUsers: 6,
+  },
+  {
+    code: 'r5t4r4trt',
+    name: 'Chez René',
+    state: 'PLAYING',
+    gameDefinition: 'Bombparty',
+    nbOfUsers: 6,
+  },
+  {
+    code: 'r5t4r4trt',
+    name: 'Chez René',
+    state: 'PLAYING',
+    gameDefinition: 'Bombparty',
+    nbOfUsers: 6,
+  },
+  {
+    code: 'r5t4r4trt',
+    name: 'Chez René',
+    state: 'PLAYING',
+    gameDefinition: 'Bombparty',
+    nbOfUsers: 6,
+  },
+  {
+    code: 'r5t4r4trt',
+    name: 'Chez René',
+    state: 'PLAYING',
+    gameDefinition: 'Bombparty',
+    nbOfUsers: 6,
+  },
+  {
+    code: 'r5t4r4trt',
+    name: 'Chez René',
+    state: 'PLAYING',
+    gameDefinition: 'Bombparty',
+    nbOfUsers: 6,
+  },
+  {
+    code: 'r5t4r4trt',
+    name: 'Chez René',
+    state: 'PLAYING',
+    gameDefinition: 'Bombparty',
+    nbOfUsers: 6,
+  },
+  {
+    code: 'r5t4r4trt',
+    name: 'Chez René',
+    state: 'PLAYING',
+    gameDefinition: 'Bombparty',
+    nbOfUsers: 6,
+  },
+];
+</script>
 
-<style scoped></style>
+<style scoped>
+.rooms-grid {
+  @apply grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5;
+}
+</style>

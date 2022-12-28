@@ -3,7 +3,10 @@ export default defineNuxtConfig({
   ssr: false,
   app: {
     head: {
-      title: 'Polygame',
+      titleTemplate: (title: string | undefined) => {
+        return title ? `${title} - Polygame` : 'Polygame';
+      },
+      link: [{ rel: 'icon', href: '/img/favicon.ico', type: 'image/x-icon' }],
     },
   },
   modules: [
