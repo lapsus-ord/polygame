@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,8 +9,12 @@
     overflow-x: clip;
 }
 
+body {
+    font-family: 'Outfit', sans-serif;
+}
+
 h1 {
-    @apply text-3xl font-bold;
+    @apply text-2xl font-bold;
 }
 
 .animate-zoom {
