@@ -11,6 +11,8 @@
 
 body {
     font-family: 'Outfit', sans-serif;
+    background: #ffd168 url('/img/pattern.png') repeat;
+    background-size: 225px;
 }
 
 h1 {

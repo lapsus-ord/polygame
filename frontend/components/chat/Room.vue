@@ -20,7 +20,7 @@
         type="submit"
         class="input input-bordered border-l-0 rounded-l-none"
       >
-        <Icon name="carbon:send-alt-filled" />
+        <Icon name="carbon:send-alt-filled" size="1.5rem" />
       </button>
     </form>
   </div>

@@ -8,7 +8,7 @@
       <NuxtPage />
     </NuxtLayout>
 
-    <footer class="footer footer-center py-4 bg-neutral text-neutral-content">
+    <footer class="footer footer-center py-2 bg-neutral text-neutral-content">
       <div class="items-center grid-flow-col">
         <Icon name="logos:partytown-icon" size="20px" />
         <p>

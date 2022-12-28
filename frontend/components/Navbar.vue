@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar">
+  <nav class="navbar">
     <div class="navbar-start flex gap-4">
       <NuxtLink to="/" class="btn btn-ghost gap-2">
         <Icon name="logos:partytown-icon" size="2rem" />
@@ -34,5 +34,5 @@
         </ul>
       </div>
     </div>
-  </div>
+  </nav>
 </template>
