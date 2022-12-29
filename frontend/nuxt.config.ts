@@ -1,5 +1,3 @@
-import { resolve } from 'node:path';
-
 export default defineNuxtConfig({
   ssr: false,
   app: {
@@ -12,17 +10,11 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxt/image-edge',
-    '@nuxtjs/color-mode',
-    '@nuxtjs/i18n',
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
-    '@vueuse/nuxt',
     'nuxt-icon',
   ],
-  alias: {
-    typings: resolve(__dirname, './typings'),
-  },
   imports: {
     dirs: ['./stores'],
   },
@@ -30,10 +22,6 @@ export default defineNuxtConfig({
     public: {
       api_base: '',
     },
-  },
-  colorMode: {
-    preference: 'system',
-    dataValue: 'theme',
   },
   typescript: {
     typeCheck: true,
