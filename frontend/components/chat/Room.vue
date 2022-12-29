@@ -9,7 +9,7 @@
     </div>
     <form class="w-full flex" autocomplete="off" @submit.prevent="sendMessage">
       <textarea
-        v-model="inputMessage"
+        v-model.trim="inputMessage"
         rows="1"
         style="resize: none"
         placeholder="Envoyer un message"
@@ -46,12 +46,12 @@ const messages = ref([
 const inputMessage = ref('');
 
 const sendMessage = () => {
-  if ('' === inputMessage.value.trim()) return;
+  if ('' === inputMessage.value) return;
 
   messages.value.push({
     username: 'moi',
     date: Date.now(),
-    content: inputMessage.value.trim(),
+    content: inputMessage.value,
     isAdmin: false,
     ownership: true,
   });

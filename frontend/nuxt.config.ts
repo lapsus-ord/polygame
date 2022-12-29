@@ -1,4 +1,5 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import { resolve } from 'node:path';
+
 export default defineNuxtConfig({
   ssr: false,
   app: {
@@ -15,9 +16,16 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
     '@vueuse/nuxt',
     'nuxt-icon',
   ],
+  alias: {
+    typings: resolve(__dirname, './typings'),
+  },
+  imports: {
+    dirs: ['./stores'],
+  },
   runtimeConfig: {
     public: {
       api_base: '',

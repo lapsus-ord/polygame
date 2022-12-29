@@ -1,0 +1,37 @@
+<template>
+  <ul class="tabs tabs-boxed mb-6 justify-center py-4">
+    <li
+      :class="`tab ${tabPicked === 'users' ? 'tab-active' : ''}`"
+      @click="$emit('update:tabPicked', 'users')"
+    >
+      <span>Utilisateurs</span>
+    </li>
+    <li
+      class="tab"
+      :class="`tab ${tabPicked === 'rooms' ? 'tab-active' : ''}`"
+      @click="$emit('update:tabPicked', 'rooms')"
+    >
+      <span>Salons</span>
+    </li>
+    <li
+      class="tab"
+      :class="`tab ${tabPicked === 'games' ? 'tab-active' : ''}`"
+      @click="$emit('update:tabPicked', 'games')"
+    >
+      <span>Jeux</span>
+    </li>
+  </ul>
+</template>
+
+<script setup lang="ts">
+defineProps<{
+  tabPicked: string;
+}>();
+defineEmits(['update:tabPicked']);
+</script>
+
+<style scoped>
+.tabs .tab {
+  @apply text-lg basis-1/3;
+}
+</style>
