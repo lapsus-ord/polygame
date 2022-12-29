@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!isAuthentified">
+    <div v-if="!isAuthenticated">
       <NuxtLink to="/auth/login">
         <div id="navbar-dropdown-button" tabindex="0">
           <h1 class="link">Login</h1>
@@ -23,6 +23,9 @@
         <li>
           <NuxtLink to="/users/me">Profil</NuxtLink>
         </li>
+        <li v-if="isAdmin">
+          <NuxtLink to="/admin">Espace admin</NuxtLink>
+        </li>
         <li>
           <NuxtLink to="/" @click="handleLogout">Se déconnecter</NuxtLink>
         </li>
@@ -32,7 +35,8 @@
 </template>
 
 <script setup lang="ts">
-const isAuthentified = ref(false);
+const isAuthenticated = ref(true);
+const isAdmin = ref(false);
 
 const handleLogout = () => {
   console.log('Logout action');
