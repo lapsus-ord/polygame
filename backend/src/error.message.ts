@@ -9,6 +9,10 @@ export const errors = {
   login: {
     credentialsWrong: 'login.credentials.wrong',
   },
+  refreshToken: {
+    notBelongToAnyone: 'refresh_token.no_one',
+    notMatching: 'refresh_token.not_matching',
+  },
   rooms: {
     notFound: 'room.not_found',
     userAlreadyIn: 'room.user_already_in',

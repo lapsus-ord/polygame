@@ -72,7 +72,27 @@ export class AuthService {
     });
   }
 
-  async getTokens(
+  async refreshTokens(userId: number, oldRefreshToken: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (null === user || null === user.refreshToken)
+      throw new ForbiddenException(errors.refreshToken.notBelongToAnyone);
+
+    const refreshTokenMatches = await argon2.verify(
+      user.refreshToken,
+      oldRefreshToken
+    );
+    if (!refreshTokenMatches)
+      throw new ForbiddenException(errors.refreshToken.notMatching);
+
+    const tokens = await this.getTokens(user.id, user.username, user.role);
+    await this.updateRefreshToken(user.id, tokens.refresh_token);
+
+    return tokens;
+  }
+
+  private async getTokens(
     userId: number,
     username: string,
     role: Role
@@ -100,19 +120,19 @@ export class AuthService {
     };
   }
 
-  async updateRefreshToken(
+  private async updateRefreshToken(
     userId: number,
     refreshToken: string
   ): Promise<void> {
-    const hashRefreshToken = await argon2.hash(refreshToken);
+    const newRefreshToken = await argon2.hash(refreshToken);
 
     await this.prisma.user.update({
       where: { id: userId },
-      data: { refreshToken: hashRefreshToken },
+      data: { refreshToken: newRefreshToken },
     });
   }
 
-  hash(data: string): Promise<string> {
+  private hash(data: string): Promise<string> {
     return argon2.hash(data);
   }
 }

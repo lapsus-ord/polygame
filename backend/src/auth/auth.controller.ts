@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto, RegisterUserDto } from './types/auth.dto';
-import { Tokens } from './types/jwt.type';
+import { JwtPayload, Tokens } from './types/jwt.type';
 import { RefreshTokenGuard } from './guard/refresh-token.guard';
 import { AccessTokenGuard } from './guard/access-token.guard';
 import { GetUser } from './decorator/user.decorator';
@@ -41,15 +41,7 @@ export class AuthController {
 
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
-  async refreshTokens(@GetUser() user: User) {
-    const tokens = await this.authService.getTokens(
-      user.id,
-      user.username,
-      user.role
-    );
-
-    await this.authService.updateRefreshToken(user.id, tokens.refresh_token);
-
-    return tokens;
+  refreshTokens(@GetUser() user: JwtPayload & { refreshToken: string }) {
+    return this.authService.refreshTokens(user.sub, user.refreshToken);
   }
 }
