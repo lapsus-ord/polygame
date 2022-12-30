@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div v-if="authStore.isAuthenticated" class="dropdown dropdown-end">
+    <div v-if="userStore.isLogged" class="dropdown dropdown-end">
       <div id="navbar-dropdown-button" tabindex="0">
-        <h1>{{ authStore.user?.username ?? '' }}</h1>
+        <h1>{{ userStore.user?.username ?? '' }}</h1>
         <div class="avatar">
           <Icon name="ic:baseline-account-circle" class="w-10 h-auto" />
         </div>
@@ -15,7 +15,7 @@
         <li>
           <NuxtLink to="/users/me">Profil</NuxtLink>
         </li>
-        <li v-if="authStore.isAdmin">
+        <li v-if="userStore.isAdmin">
           <NuxtLink to="/admin">Espace admin</NuxtLink>
         </li>
         <li>
@@ -27,7 +27,7 @@
     <div v-else>
       <NuxtLink to="/auth/login">
         <div id="navbar-dropdown-button" tabindex="0">
-          <h1 class="link">Login</h1>
+          <h1 class="link">Connexion</h1>
         </div>
       </NuxtLink>
     </div>
@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 const authStore = useAuthStore();
+const userStore = useUserStore();
 </script>
 
 <style scoped>
@@ -53,7 +54,7 @@ const authStore = useAuthStore();
 }
 
 #navbar-dropdown-button > h1 {
-  @apply text-xl normal-case mx-3;
+  @apply text-lg normal-case mx-3;
 }
 
 #navbar-dropdown-button > .avatar {

@@ -19,6 +19,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
+    '@typescript-eslint/ban-types': 'off',
     'vue/multi-word-component-names': 'off',
   },
 };

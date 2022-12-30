@@ -1,17 +1,17 @@
 <template>
   <form
-    class="flex flex-col items-center gap-6 text-2xl"
-    @submit.prevent="handleLogin"
+    class="flex flex-col items-center gap-4 text-2xl"
+    @submit.prevent="handleRegister"
   >
     <div class="form-control w-full max-w-xs">
       <label class="label" for="login-input">Pseudo</label>
       <input
         id="login-input"
-        v-model="login"
+        v-model="username"
         type="text"
         placeholder="Exemple : john.doe"
         autocomplete="username"
-        class="input input-bordered"
+        :class="`input input-bordered ${errorMessage ? 'input-error' : ''}`"
       />
     </div>
     <div class="form-control w-full max-w-xs">
@@ -21,11 +21,15 @@
         v-model="password"
         type="password"
         placeholder="********"
-        autocomplete="current-password"
-        class="input input-bordered"
+        autocomplete="new-password"
+        :class="`input input-bordered ${errorMessage ? 'input-error' : ''}`"
       />
     </div>
-    <button type="submit" class="btn btn-primary mt-2">
+    <p v-if="errorMessage" class="text-error text-lg font-bold">
+      <Icon name="twemoji:warning" size="1.5rem" class="mr-2" />
+      <span>{{ errorMessage }}</span>
+    </p>
+    <button type="submit" class="btn btn-primary">
       <Icon name="carbon:send-alt-filled" size="1.5rem" />
       <span class="text-lg">&nbsp;S'inscrire</span>
     </button>
@@ -33,11 +37,20 @@
 </template>
 
 <script setup lang="ts">
-const login = ref('');
-const password = ref('');
+const authStore = useAuthStore();
 
-const handleLogin = () => {
-  console.log(`login: ${login.value}\n`);
-  console.log(`password: ${password.value}`);
+const username = ref('');
+const password = ref('');
+const errorMessage = ref('');
+
+const handleRegister = () => {
+  authStore.register(username.value, password.value).then((result) => {
+    if (result.hasSucceeded) {
+      navigateTo('/');
+    } else {
+      console.log(result.data.message);
+      errorMessage.value = 'Pseudo déjà pris';
+    }
+  });
 };
 </script>

@@ -27,4 +27,12 @@ export default defineNuxtConfig({
     typeCheck: true,
     strict: true,
   },
+  piniaPersistedstate: {
+    cookieOptions: {
+      // httpOnly: true,
+      sameSite: 'strict',
+      secure: true,
+    },
+    storage: 'cookies',
+  },
 });

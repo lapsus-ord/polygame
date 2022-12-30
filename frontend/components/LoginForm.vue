@@ -1,6 +1,6 @@
 <template>
   <form
-    class="flex flex-col items-center gap-6 text-2xl"
+    class="flex flex-col items-center gap-4 text-2xl"
     @submit.prevent="handleLogin"
   >
     <div class="form-control w-full max-w-xs">
@@ -13,9 +13,6 @@
         autocomplete="username"
         :class="`input input-bordered ${errorMessage ? 'input-error' : ''}`"
       />
-      <p v-if="errorMessage" class="text-error text-sm">
-        {{ errorMessage }}
-      </p>
     </div>
     <div class="form-control w-full max-w-xs">
       <label class="label" for="password-input">Mot de passe</label>
@@ -27,10 +24,11 @@
         autocomplete="current-password"
         :class="`input input-bordered ${errorMessage ? 'input-error' : ''}`"
       />
-      <p v-if="errorMessage" class="text-error text-sm">
-        {{ errorMessage }}
-      </p>
     </div>
+    <p v-if="errorMessage" class="text-error text-lg font-bold">
+      <Icon name="twemoji:warning" size="1.5rem" class="mr-2" />
+      <span>{{ errorMessage }}</span>
+    </p>
     <button type="submit" class="btn btn-primary">
       <Icon name="carbon:send-alt-filled" size="1.5rem" />
       <span class="text-lg">&nbsp;Se connecter</span>
@@ -46,14 +44,13 @@ const password = ref('');
 const errorMessage = ref('');
 
 const handleLogin = () => {
-  console.log(`login: ${username.value}\n`);
-  console.log(`password: ${password.value}`);
-
-  const res = authStore.login(username.value, password.value);
-  if (res) {
-    navigateTo('/');
-  } else {
-    errorMessage.value = 'Wrong credentials';
-  }
+  authStore.login(username.value, password.value).then((result) => {
+    if (result.hasSucceeded) {
+      navigateTo('/');
+    } else {
+      console.log(result.data.message);
+      errorMessage.value = 'Mauvais identifiants';
+    }
+  });
 };
 </script>
