@@ -1,4 +1,5 @@
 <template>
+  <Title>Espace admin</Title>
   <div class="h-full flex flex-col">
     <h1 class="text-4xl text-center mb-6">Espace admin</h1>
 
@@ -15,7 +16,6 @@ import { Ref } from 'vue';
 
 definePageMeta({
   middleware: 'auth',
-  title: 'Espace admin',
 });
 
 const tab: Ref<string> = ref('users');

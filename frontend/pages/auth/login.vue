@@ -1,4 +1,6 @@
 <template>
+  <Title>Connexion</Title>
+
   <div class="h-full flex items-center justify-center gap-32">
     <aside class="hidden sm:block">
       <span><Icon name="noto:elephant" size="150px" /></span>
@@ -16,6 +18,5 @@
 <script setup lang="ts">
 definePageMeta({
   middleware: 'auth',
-  title: 'Connexion',
 });
 </script>

@@ -1,4 +1,6 @@
 <template>
+  <Title>Salon {{ code }}</Title>
+
   <div>{{ code }}</div>
 </template>
 

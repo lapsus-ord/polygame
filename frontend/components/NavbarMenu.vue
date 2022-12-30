@@ -54,7 +54,7 @@ const userStore = useUserStore();
 }
 
 #navbar-dropdown-button > h1 {
-  @apply text-lg normal-case mx-3;
+  @apply text-lg normal-case mx-3 overflow-x-hidden whitespace-nowrap;
 }
 
 #navbar-dropdown-button > .avatar {
