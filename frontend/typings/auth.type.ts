@@ -15,5 +15,10 @@ export type JwtDataType = {
 
 export type ResultType = {
   hasSucceeded: boolean;
-  data: { status: number; message: string };
+  data: ResultDataType;
+};
+
+export type ResultDataType = {
+  status: number;
+  messages: string[];
 };

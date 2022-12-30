@@ -3,7 +3,7 @@
     class="flex flex-col items-center gap-4 text-2xl"
     @submit.prevent="handleLogin"
   >
-    <div class="form-control w-full max-w-xs">
+    <div class="form-control">
       <label class="label" for="login-input">Pseudo</label>
       <input
         id="login-input"
@@ -11,10 +11,11 @@
         type="text"
         placeholder="Exemple : john.doe"
         autocomplete="username"
-        :class="`input input-bordered ${errorMessage ? 'input-error' : ''}`"
+        required
+        :class="`input input-bordered ${errors.length ? 'input-error' : ''}`"
       />
     </div>
-    <div class="form-control w-full max-w-xs">
+    <div class="form-control">
       <label class="label" for="password-input">Mot de passe</label>
       <input
         id="password-input"
@@ -22,14 +23,17 @@
         type="password"
         placeholder="********"
         autocomplete="current-password"
-        :class="`input input-bordered ${errorMessage ? 'input-error' : ''}`"
+        required
+        :class="`input input-bordered ${errors.length ? 'input-error' : ''}`"
       />
     </div>
-    <p v-if="errorMessage" class="text-error text-lg font-bold">
+
+    <p v-for="error in errors" :key="error" class="whitespace-wrap text-center">
       <Icon name="twemoji:warning" size="1.5rem" class="mr-2" />
-      <span>{{ errorMessage }}</span>
+      <span class="text-error text-lg font-bold">{{ error }}</span>
     </p>
-    <button type="submit" class="btn btn-primary">
+
+    <button type="submit" class="btn btn-primary mt-1">
       <Icon name="carbon:send-alt-filled" size="1.5rem" />
       <span class="text-lg">&nbsp;Se connecter</span>
     </button>
@@ -41,15 +45,14 @@ const authStore = useAuthStore();
 
 const username = ref('');
 const password = ref('');
-const errorMessage = ref('');
+const errors = ref([] as string[]);
 
 const handleLogin = () => {
   authStore.login(username.value, password.value).then((result) => {
     if (result.hasSucceeded) {
       navigateTo('/');
     } else {
-      console.log(result.data.message);
-      errorMessage.value = 'Mauvais identifiants';
+      errors.value = result.data.messages;
     }
   });
 };

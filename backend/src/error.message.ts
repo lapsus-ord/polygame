@@ -1,7 +1,6 @@
 export const errors = {
   register: {
     credentialsTaken: 'register.credentials.taken',
-    usernameTaken: 'register.username.taken',
     usernameEmpty: 'register.username.empty',
     passwordEmpty: 'register.password.empty',
     usernameMinLength: 'register.username.min_length',

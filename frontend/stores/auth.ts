@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { Ref } from 'vue';
 import jwtDecode from 'jwt-decode';
 import { ResultType, JwtDataType, TokensType } from '~/typings/auth.type';
-import { FetchError } from 'ofetch';
+import { handleFetchError } from '~/utils/handleFetchError';
 
 const authRoutes = {
   login: {
@@ -54,8 +54,9 @@ export const useAuthStore = defineStore(
           },
         }
       );
+      if (null === data.value) return handleFetchError(error.value);
 
-      return storeUser(data, error);
+      return storeUser(data.value);
     };
 
     const register = async (
@@ -73,8 +74,24 @@ export const useAuthStore = defineStore(
           },
         }
       );
+      if (null === data.value) return handleFetchError(error.value);
 
-      return storeUser(data, error);
+      return storeUser(data.value);
+    };
+
+    // Create user object and handle error if any
+    const storeUser = (data: TokensType): ResultType => {
+      accessToken.value = data.access_token;
+      refreshToken.value = data.refresh_token;
+
+      const userStore = useUserStore();
+      const userDecoded = jwtDecode<JwtDataType>(data.access_token);
+      userStore.init(userDecoded);
+
+      return {
+        hasSucceeded: true,
+        data: { status: 0, messages: [] },
+      };
     };
 
     const logout = () => {
@@ -87,31 +104,6 @@ export const useAuthStore = defineStore(
         refreshToken.value = null;
         useUserStore().reset();
       });
-    };
-
-    // Create user object and handle error if any
-    const storeUser = (
-      data: Ref<TokensType | null>,
-      error: Ref<FetchError | null>
-    ): ResultType => {
-      if (null === data.value || null !== error.value) {
-        return {
-          hasSucceeded: false,
-          data: error.value ? error.value.data : { status: 0, message: '' },
-        };
-      }
-
-      accessToken.value = data.value.access_token;
-      refreshToken.value = data.value.refresh_token;
-
-      const userStore = useUserStore();
-      const userDecoded = jwtDecode<JwtDataType>(data.value.access_token);
-      userStore.init(userDecoded);
-
-      return {
-        hasSucceeded: true,
-        data: { status: 0, message: 'succeeded' },
-      };
     };
 
     return {
