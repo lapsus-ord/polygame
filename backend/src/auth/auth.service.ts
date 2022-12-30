@@ -11,6 +11,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2';
 import { LoginUserDto, RegisterUserDto } from './types/auth.dto';
 import { Tokens } from './types/jwt.type';
+import { errors } from '../error.message';
 
 @Injectable()
 export class AuthService {
@@ -43,7 +44,7 @@ export class AuthService {
       if (!(error instanceof PrismaClientKnownRequestError)) throw error;
       if (error.code !== 'P2002') throw error;
 
-      throw new ConflictException('Credentials taken');
+      throw new ConflictException(errors.register.credentialsTaken);
     }
   }
 
@@ -51,10 +52,12 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { username: dto.username },
     });
-    if (null === user) throw new ForbiddenException('Wrong credentials');
+    if (null === user)
+      throw new ForbiddenException(errors.login.credentialsWrong);
 
     const isSamePassword = await argon2.verify(user.password, dto.password);
-    if (!isSamePassword) throw new ForbiddenException('Wrong credentials');
+    if (!isSamePassword)
+      throw new ForbiddenException(errors.login.credentialsWrong);
 
     const tokens = await this.getTokens(user.id, user.username, user.role);
     await this.updateRefreshToken(user.id, tokens.refresh_token);

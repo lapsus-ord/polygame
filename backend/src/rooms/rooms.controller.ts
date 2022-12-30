@@ -20,6 +20,7 @@ import { AccessTokenGuard } from 'src/auth/guard/access-token.guard';
 import { RoomsService } from './rooms.service';
 import { GameDefinitionService } from 'src/games/game-definitions.service';
 import { JoinLeaveRoomType } from './types/join-leave-room.type';
+import { errors } from '../error.message';
 
 @Controller('rooms')
 export class RoomsController {
@@ -51,7 +52,7 @@ export class RoomsController {
   @Get(':code')
   async findByCode(@Param('code') code: string): Promise<RoomWithUsersType> {
     const room = await this.rooms.findByCode(code);
-    if (null === room) throw new NotFoundException('room not found');
+    if (null === room) throw new NotFoundException(errors.rooms.notFound);
 
     return {
       code: room.code,
@@ -79,9 +80,9 @@ export class RoomsController {
       dto.gameDefinitionSlug
     );
     if (null === gameDefinition)
-      throw new NotFoundException('game definition not found');
+      throw new NotFoundException(errors.gameDefinitions.notFound);
 
-    // Create the room in "WAITING" mode with a game instance
+    // Create the room in “WAITING” mode with a game instance
     const room = await this.rooms.create(user, dto, gameDefinition);
 
     return {
@@ -128,11 +129,11 @@ export class RoomsController {
     @GetUser() user: User
   ): Promise<JoinLeaveRoomType> {
     const room = await this.rooms.findByCode(code);
-    if (null === room) throw new NotFoundException('room not found');
+    if (null === room) throw new NotFoundException(errors.rooms.notFound);
 
     const userIsInTheRoom = await this.rooms.isUserInTheRoom(user, room);
     if (userIsInTheRoom)
-      throw new BadRequestException('user is already in the room');
+      throw new BadRequestException(errors.rooms.userAlreadyIn);
 
     await this.rooms.join(user, room);
 
@@ -146,14 +147,13 @@ export class RoomsController {
     @GetUser() user: User
   ): Promise<JoinLeaveRoomType> {
     const room = await this.rooms.findByCode(code);
-    if (null === room) throw new NotFoundException('room not found');
+    if (null === room) throw new NotFoundException(errors.rooms.notFound);
 
     const userIsInTheRoom = await this.rooms.isUserInTheRoom(user, room);
-    if (!userIsInTheRoom)
-      throw new BadRequestException('user is not in the room');
+    if (!userIsInTheRoom) throw new BadRequestException(errors.rooms.userNotIn);
 
     if (room.creatorId === user.id)
-      throw new BadRequestException("creator cannot leave it's room");
+      throw new BadRequestException(errors.rooms.creatorCannotLeave);
 
     await this.rooms.leave(user, room);
 
@@ -165,9 +165,9 @@ export class RoomsController {
     roomTargetCode: string
   ): Promise<Room> {
     const room = await this.rooms.findByCode(roomTargetCode);
-    if (null === room) throw new NotFoundException('room not found');
+    if (null === room) throw new NotFoundException(errors.rooms.notFound);
 
-    // If user own the resource, or he's an admin -> authorized
+    // If user own the resource, or he's an admin -> authorized.
     if (currentUser.role === Role.ADMIN || currentUser.id === room.creatorId)
       return room;
 
