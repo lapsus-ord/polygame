@@ -30,7 +30,16 @@ export const useAuthStore = defineStore(
     const refreshToken: Ref<string | null> = ref(null);
 
     const isAuthenticated = computed(() => {
-      return null !== refreshToken.value;
+      let refreshTokenHasExpired = false;
+      if (null !== refreshToken.value)
+        refreshTokenHasExpired =
+          jwtDecode<JwtDataType>(refreshToken.value).exp <
+          Math.floor(Date.now() / 1000);
+
+      // When refresh token expires → remove all auth info
+      if (refreshTokenHasExpired) reset();
+
+      return null !== refreshToken.value && !refreshTokenHasExpired;
     });
 
     const decodedToken = computed(() => {
@@ -38,6 +47,20 @@ export const useAuthStore = defineStore(
         ? jwtDecode<JwtDataType>(accessToken.value)
         : null;
     });
+
+    const accessTokenHasExpired = computed(() => {
+      return (
+        null === decodedToken.value ||
+        decodedToken.value.exp < Math.floor(Date.now() / 1000)
+      );
+    });
+
+    const init = (newAccessToken: string, newRefreshToken: string) => {
+      accessToken.value = newAccessToken;
+      refreshToken.value = newRefreshToken;
+      const userStore = useUserStore();
+      userStore.init(jwtDecode<JwtDataType>(accessToken.value));
+    };
 
     const login = async (
       username: string,
@@ -56,7 +79,12 @@ export const useAuthStore = defineStore(
       );
       if (null === data.value) return handleFetchError(error.value);
 
-      return storeUser(data.value);
+      init(data.value.access_token, data.value.refresh_token);
+
+      return {
+        hasSucceeded: true,
+        data: { status: 0, messages: [] },
+      };
     };
 
     const register = async (
@@ -76,17 +104,7 @@ export const useAuthStore = defineStore(
       );
       if (null === data.value) return handleFetchError(error.value);
 
-      return storeUser(data.value);
-    };
-
-    // Create user object and handle error if any
-    const storeUser = (data: TokensType): ResultType => {
-      accessToken.value = data.access_token;
-      refreshToken.value = data.refresh_token;
-
-      const userStore = useUserStore();
-      const userDecoded = jwtDecode<JwtDataType>(data.access_token);
-      userStore.init(userDecoded);
+      init(data.value.access_token, data.value.refresh_token);
 
       return {
         hasSucceeded: true,
@@ -95,15 +113,15 @@ export const useAuthStore = defineStore(
     };
 
     const logout = () => {
-      const config = useRuntimeConfig();
-      useFetch(config.public.api_base + authRoutes.logout.uri, {
+      useAuthFetch(authRoutes.logout.uri, {
         method: authRoutes.logout.method,
-        headers: { Authorization: `Bearer ${accessToken.value}` },
-      }).then(() => {
-        accessToken.value = null;
-        refreshToken.value = null;
-        useUserStore().reset();
-      });
+      }).then(() => reset());
+    };
+
+    const reset = () => {
+      accessToken.value = null;
+      refreshToken.value = null;
+      useUserStore().reset();
     };
 
     return {
@@ -111,9 +129,12 @@ export const useAuthStore = defineStore(
       refreshToken,
       isAuthenticated,
       decodedToken,
+      accessTokenHasExpired,
+      init,
       login,
       register,
       logout,
+      reset,
     };
   },
   { persist: { paths: ['refreshToken'] } }
