@@ -9,7 +9,7 @@
           <span
             class="font-light text-sm bg-neutral-content text-neutral rounded px-1"
           >
-            {{ room.userCount }} joueurs
+            {{ room.nbOfUsers }} joueurs
           </span>
         </div>
         <p class="font-light text-neutral-content/90">
@@ -24,17 +24,10 @@
 </template>
 
 <script setup lang="ts">
+import { RoomType } from '~/typings/room.type';
+
 defineProps<{
-  room: {
-    code: string;
-    name: string;
-    state: string;
-    // creator: { id: number; username: string };
-    gameDefinition: string;
-    userCount: number;
-    // createdAt: Date;
-    // updatedAt: Date;
-  };
+  room: RoomType;
 }>();
 </script>
 

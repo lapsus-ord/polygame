@@ -121,7 +121,8 @@ export const useAuthStore = defineStore(
     const reset = () => {
       accessToken.value = null;
       refreshToken.value = null;
-      useUserStore().reset();
+      const userStore = useUserStore();
+      userStore.reset();
     };
 
     return {

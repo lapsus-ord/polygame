@@ -27,7 +27,7 @@
     <div v-else>
       <NuxtLink to="/auth/login">
         <div id="navbar-dropdown-button" tabindex="0">
-          <h1 class="link">Connexion</h1>
+          <h1>Se connecter</h1>
         </div>
       </NuxtLink>
     </div>
@@ -54,7 +54,7 @@ const userStore = useUserStore();
 }
 
 #navbar-dropdown-button > h1 {
-  @apply text-lg normal-case mx-3 overflow-x-hidden whitespace-nowrap;
+  @apply text-lg mx-3 overflow-x-hidden whitespace-nowrap cursor-pointer;
 }
 
 #navbar-dropdown-button > .avatar {
