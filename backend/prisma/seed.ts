@@ -21,6 +21,7 @@ async function main() {
     insertUser('admin', 'admin', Role.ADMIN),
     insertUser('test', 'test', Role.USER),
     insertGameDefinition('bombparty', 'Bomb Party'),
+    insertGameDefinition('cowboy-clicker', 'Ready Steady Bang!'),
   ]);
 }
 

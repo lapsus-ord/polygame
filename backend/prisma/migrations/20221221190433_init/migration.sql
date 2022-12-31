@@ -184,6 +184,7 @@ begin
       and 0 = (select count(1)
                from public.users_in_rooms u_r
                where u_r.room_id = old.room_id);
+    return old;
 end;
 $$ language plpgsql;
 
