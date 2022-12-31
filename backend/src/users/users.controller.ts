@@ -72,7 +72,11 @@ export class UsersController {
         code: room.code,
         name: room.name,
         state: room.state,
-        creator: { id: room.creator.id, username: room.creator.username },
+        creator: {
+          id: room.creator.id,
+          username: room.creator.username,
+          role: room.creator.role,
+        },
         gameDefinition: room.game.definitionSlug,
         nbOfUsers: room._count.users,
         createdAt: room.createdAt,

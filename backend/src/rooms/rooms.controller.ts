@@ -39,7 +39,11 @@ export class RoomsController {
           code: room.code,
           name: room.name,
           state: room.state,
-          creator: { id: room.creator.id, username: room.creator.username },
+          creator: {
+            id: room.creator.id,
+            username: room.creator.username,
+            role: room.creator.role,
+          },
           gameDefinition: room.game.definitionSlug,
           nbOfUsers: await this.rooms.getNbOfUsersInTheRoom(room),
           createdAt: room.createdAt,
@@ -58,10 +62,18 @@ export class RoomsController {
       code: room.code,
       name: room.name,
       state: room.state,
-      creator: { id: room.creator.id, username: room.creator.username },
+      creator: {
+        id: room.creator.id,
+        username: room.creator.username,
+        role: room.creator.role,
+      },
       gameDefinition: room.game.definitionSlug,
       users: room.users.map((user) => {
-        return { id: user.user.id, username: user.user.username };
+        return {
+          id: user.user.id,
+          username: user.user.username,
+          role: user.user.role,
+        };
       }),
       createdAt: room.createdAt,
       updatedAt: room.updatedAt,
@@ -89,10 +101,18 @@ export class RoomsController {
       code: room.code,
       name: room.name,
       state: room.state,
-      creator: { id: room.creator.id, username: room.creator.username },
+      creator: {
+        id: room.creator.id,
+        username: room.creator.username,
+        role: room.creator.role,
+      },
       gameDefinition: room.game.definitionSlug,
       users: room.users.map((user) => {
-        return { id: user.user.id, username: user.user.username };
+        return {
+          id: user.user.id,
+          username: user.user.username,
+          role: user.user.role,
+        };
       }),
       createdAt: room.createdAt,
       updatedAt: room.updatedAt,
@@ -115,6 +135,7 @@ export class RoomsController {
       creator: {
         id: deletedRoom.creator.id,
         username: deletedRoom.creator.username,
+        role: deletedRoom.creator.role,
       },
       gameDefinition: deletedRoom.game.definitionSlug,
       createdAt: deletedRoom.createdAt,

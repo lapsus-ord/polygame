@@ -25,9 +25,13 @@ export class RoomsService {
     return this.prisma.room.findMany({
       where,
       include: {
-        creator: { select: { id: true, username: true } },
+        creator: { select: { id: true, username: true, role: true } },
         game: { select: { definitionSlug: true } },
-        users: { select: { user: { select: { id: true, username: true } } } },
+        users: {
+          select: {
+            user: { select: { id: true, username: true, role: true } },
+          },
+        },
         _count: { select: { users: true } },
       },
     });
@@ -37,9 +41,13 @@ export class RoomsService {
     return this.prisma.room.findUnique({
       where: { code: code },
       include: {
-        creator: { select: { id: true, username: true } },
+        creator: { select: { id: true, username: true, role: true } },
         game: { select: { definitionSlug: true } },
-        users: { select: { user: { select: { id: true, username: true } } } },
+        users: {
+          select: {
+            user: { select: { id: true, username: true, role: true } },
+          },
+        },
         _count: { select: { users: true } },
       },
     });
@@ -71,9 +79,13 @@ export class RoomsService {
         users: { create: { user: { connect: { id: user.id } } } },
       },
       include: {
-        creator: { select: { id: true, username: true } },
+        creator: { select: { id: true, username: true, role: true } },
         game: { select: { definitionSlug: true } },
-        users: { select: { user: { select: { id: true, username: true } } } },
+        users: {
+          select: {
+            user: { select: { id: true, username: true, role: true } },
+          },
+        },
         _count: { select: { users: true } },
       },
     });
@@ -83,9 +95,13 @@ export class RoomsService {
     return this.prisma.room.delete({
       where: { code: code },
       include: {
-        creator: { select: { id: true, username: true } },
+        creator: { select: { id: true, username: true, role: true } },
         game: { select: { definitionSlug: true } },
-        users: { select: { user: { select: { id: true, username: true } } } },
+        users: {
+          select: {
+            user: { select: { id: true, username: true, role: true } },
+          },
+        },
         _count: { select: { users: true } },
       },
     });

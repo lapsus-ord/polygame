@@ -1,26 +1,31 @@
-import { Prisma, RoomState } from '@prisma/client';
+import { Prisma, Role, RoomState } from '@prisma/client';
+
+type RoomUserType = { id: number; username: string; role: Role };
 
 export type RoomType = {
   code: string;
   name: string;
   state: RoomState;
-  creator: { id: number; username: string };
+  creator: RoomUserType;
   gameDefinition: string;
   createdAt: Date;
   updatedAt: Date;
 };
 
+export type RoomWithUsersType = RoomType & {
+  users: RoomUserType[];
+};
+
 export type RoomsType = Array<RoomType & { nbOfUsers: number }>;
 
-export type RoomWithUsersType = RoomType & {
-  users: { id: number; username: string }[];
-};
+// Prisma selector types
+type PrismaRoomUserType = { id: boolean; username: boolean; role: boolean };
 
 export type PrismaRoomType = Prisma.RoomGetPayload<{
   include: {
-    creator: { select: { id: boolean; username: boolean } };
+    creator: { select: PrismaRoomUserType };
     game: { select: { definitionSlug: boolean } };
-    users: { select: { user: { select: { id: boolean; username: boolean } } } };
+    users: { select: { user: { select: PrismaRoomUserType } } };
     _count: { select: { users: boolean } };
   };
 }>;
