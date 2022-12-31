@@ -1,11 +1,8 @@
 export type GameDefinitionType = {
   slug: string;
   name: string;
-};
-
-export type GameDefinitionAdminType = {
-  slug: string;
-  name: string;
-  enabled: boolean;
-  color: string;
+  logo: string;
+  description: string;
+  bgColor: string;
+  textColor: string;
 };

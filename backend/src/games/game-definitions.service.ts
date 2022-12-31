@@ -12,9 +12,9 @@ export class GameDefinitionService {
     return this.prisma.gameDefinition.findMany({ where });
   }
 
-  async findBySlug(slug: string): Promise<GameDefinition | null> {
-    return this.prisma.gameDefinition.findUnique({
-      where: { slug: slug },
+  async findEnabledBySlug(slug: string): Promise<GameDefinition | null> {
+    return this.prisma.gameDefinition.findFirst({
+      where: { slug: slug, enabled: true },
     });
   }
 }

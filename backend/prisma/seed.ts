@@ -20,8 +20,23 @@ async function main() {
   await Promise.all([
     insertUser('admin', 'admin', Role.ADMIN),
     insertUser('test', 'test', Role.USER),
-    insertGameDefinition('bombparty', 'Bomb Party'),
-    insertGameDefinition('cowboy-clicker', 'Ready Steady Bang!'),
+    insertGameDefinition({
+      slug: 'bombparty',
+      name: 'Bomb Party',
+      logo: '💣',
+      enabled: true,
+      bgColor: '#e5c094',
+      textColor: '#000',
+    }),
+    insertGameDefinition({
+      slug: 'cowboy-clicker',
+      name: 'Ready Steady Bang!',
+      logo: '🔫',
+      enabled: true,
+      bgColor: '#3dbd31',
+      textColor: '#fff',
+    }),
+    insertGameDefinition({ slug: 'lambda-1', name: 'Lambda Game Def 1' }),
   ]);
 }
 
@@ -48,20 +63,27 @@ async function insertUser(
   }
 }
 
-async function insertGameDefinition(slug: string, name: string) {
+async function insertGameDefinition(def: {
+  slug: string;
+  name: string;
+  logo?: string;
+  description?: string;
+  enabled?: boolean;
+  bgColor?: string;
+  textColor?: string;
+}) {
   try {
-    const gameDefinition = prisma.gameDefinition.create({
-      data: {
-        slug: slug,
-        name: name,
-      },
+    const definitionCreated = prisma.gameDefinition.create({
+      data: def,
     });
 
-    console.log(await gameDefinition);
+    console.log(await definitionCreated);
   } catch (error) {
     if (!(error instanceof PrismaClientKnownRequestError)) throw error;
     if (error.code !== 'P2002') throw error;
 
-    console.error(`>>> Game definition with the slug "${slug}" already exists`);
+    console.error(
+      `>>> Game definition with the slug "${def.slug}" already exists`
+    );
   }
 }

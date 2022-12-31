@@ -99,10 +99,13 @@ model GameDefinition {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  slug    String  @unique
-  name    String
-  enabled Boolean @default(false)
-  color   String  @default("#000")
+  slug        String  @unique
+  name        String
+  logo        String @default("🕹️") // emote or icones.js.org
+  description String @default("")
+  enabled     Boolean @default(false)
+  bgColor     String  @default("#000") @map("bg_color")
+  textColor   String @default("#fff") @map("text_color")
 
   Game Game[]
 

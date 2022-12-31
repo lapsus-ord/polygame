@@ -88,7 +88,7 @@ export class RoomsController {
     @Body() dto: CreateRoomDto
   ): Promise<RoomWithUsersType> {
     // Get the game definition
-    const gameDefinition = await this.gameDefinitions.findBySlug(
+    const gameDefinition = await this.gameDefinitions.findEnabledBySlug(
       dto.gameDefinitionSlug
     );
     if (null === gameDefinition)
