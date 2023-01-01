@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar sm:px-8">
+  <nav class="navbar container mx-auto">
     <div class="navbar-start flex gap-4">
       <NuxtLink to="/" class="btn btn-ghost gap-2">
         <Icon name="logos:partytown-icon" size="42px" />

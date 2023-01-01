@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mx-2 rounded">
     <label class="rocker rocker-small">
       <input type="checkbox" checked />
       <span class="switch-left">{{ leftSwitch }}</span>
@@ -36,7 +36,7 @@ defineProps<{
 .rocker-small {
   font-size: 0.75rem;
   /* Sizes the switch */
-  margin: 1rem;
+  /*margin: 1rem;*/
 }
 
 .rocker::before {

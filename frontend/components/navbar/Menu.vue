@@ -2,7 +2,7 @@
   <div>
     <div v-if="userStore.isLogged" class="dropdown dropdown-end">
       <div id="navbar-dropdown-button" tabindex="0">
-        <h1>{{ userStore.user?.username ?? '' }}</h1>
+        <h1 class="capitalize">{{ userStore.user?.username ?? '' }}</h1>
         <div class="avatar">
           <Icon name="ic:baseline-account-circle" class="w-10 h-auto" />
         </div>

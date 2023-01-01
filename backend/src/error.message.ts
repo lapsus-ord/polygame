@@ -19,6 +19,8 @@ export const errors = {
     userNotIn: 'room.user_not_in',
     creatorCannotLeave: 'room.creator_cannot_leave',
     nameEmpty: 'room.name.empty',
+    nameMinLength: 'room.name.min_length',
+    nameMaxLength: 'room.name.max_length',
   },
   gameDefinitions: {
     notFound: 'game_definition.not_found',

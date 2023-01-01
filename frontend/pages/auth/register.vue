@@ -7,7 +7,7 @@
     </aside>
     <div>
       <h1 class="text-4xl mb-4">Inscription</h1>
-      <RegisterForm />
+      <FormRegister />
       <NuxtLink to="/auth/login" class="link">
         <p class="text-lg mt-4">Déjà un compte&nbsp;? Se connecter&nbsp;!</p>
       </NuxtLink>

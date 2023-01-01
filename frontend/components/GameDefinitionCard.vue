@@ -5,6 +5,7 @@
       name="definition"
       :value="definition.name"
       class="opacity-0 absolute top-0 left-0 w-full h-full cursor-pointer z-10"
+      :checked="isChecked"
     />
     <div class="definition-body">
       <Icon class="icon" :name="definition.logo" size="60px" />
@@ -21,13 +22,15 @@ import { GameDefinitionType } from '~/typings/game.type';
 
 defineProps<{
   definition: GameDefinitionType;
+  isChecked: boolean;
 }>();
 </script>
 
 <style scoped>
 .definition-card {
-  min-width: 175px;
-  max-width: 175px;
+  min-width: 160px;
+  max-width: 160px;
+  height: 175px;
   @apply relative;
 }
 
