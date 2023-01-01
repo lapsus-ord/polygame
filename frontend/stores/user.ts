@@ -31,7 +31,9 @@ export const useUserStore = defineStore(
     const reset = () => {
       user.value = null;
       const roomStore = useRoomStore();
+      const gameStore = useGameStore();
       roomStore.resetUserRooms();
+      gameStore.resetAdminGameDefinitions();
     };
 
     return { user, isLogged, isAdmin, init, reset };
