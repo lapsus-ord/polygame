@@ -20,8 +20,7 @@ export class GameDefinitionsController {
         name: def.name,
         logo: def.logo,
         description: def.description,
-        bgColor: def.bgColor,
-        textColor: def.textColor,
+        color: def.color,
       };
     });
   }

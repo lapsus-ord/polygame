@@ -24,17 +24,17 @@ async function main() {
       slug: 'bombparty',
       name: 'Bomb Party',
       logo: '💣',
+      description: 'Jeu de mots explosif',
       enabled: true,
-      bgColor: '#e5c094',
-      textColor: '#000',
+      color: '#e5c094',
     }),
     insertGameDefinition({
       slug: 'cowboy-clicker',
-      name: 'Ready Steady Bang!',
-      logo: '🔫',
+      name: 'Bang!',
+      logo: 'noto-v1:pistol',
+      description: 'Ready, Steady, Bang!',
       enabled: true,
-      bgColor: '#3dbd31',
-      textColor: '#fff',
+      color: '#3dbd31',
     }),
     insertGameDefinition({ slug: 'lambda-1', name: 'Lambda Game Def 1' }),
   ]);
@@ -69,8 +69,7 @@ async function insertGameDefinition(def: {
   logo?: string;
   description?: string;
   enabled?: boolean;
-  bgColor?: string;
-  textColor?: string;
+  color?: string;
 }) {
   try {
     const definitionCreated = prisma.gameDefinition.create({

@@ -101,11 +101,10 @@ model GameDefinition {
 
   slug        String  @unique
   name        String
-  logo        String @default("🕹️") // emote or icones.js.org
+  logo        String @default("🕹️") // emote or from icones.js.org
   description String @default("")
   enabled     Boolean @default(false)
-  bgColor     String  @default("#000") @map("bg_color")
-  textColor   String @default("#fff") @map("text_color")
+  color     String  @default("#fff") @map("color")
 
   Game Game[]
 
