@@ -78,7 +78,7 @@ export class UsersController {
           role: room.creator.role,
         },
         gameDefinition: room.game.definitionSlug,
-        nbOfUsers: room._count.users,
+        userCount: room._count.users,
         createdAt: room.createdAt,
         updatedAt: room.updatedAt,
       };

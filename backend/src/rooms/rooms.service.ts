@@ -127,7 +127,7 @@ export class RoomsService {
     });
   }
 
-  getNbOfUsersInTheRoom(room: Room): Promise<number> {
+  getUserCountInTheRoom(room: Room): Promise<number> {
     return this.prisma.usersInRooms.count({
       where: { roomId: room.id },
     });

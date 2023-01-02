@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import {
   RoomState,
-  RoomType,
   RoomWithUserCountType,
   RoomWithUsersType,
 } from '~/typings/room.type';
@@ -26,8 +25,8 @@ const roomRoutes = {
 };
 
 export const useRoomStore = defineStore('room', () => {
-  const rooms = ref([] as RoomType[]);
-  const userRooms = ref([] as RoomType[]);
+  const rooms = ref([] as RoomWithUserCountType[]);
+  const userRooms = ref([] as RoomWithUserCountType[]);
 
   const config = useRuntimeConfig();
   const userStore = useUserStore();
@@ -44,6 +43,21 @@ export const useRoomStore = defineStore('room', () => {
       default:
         return '';
     }
+  });
+
+  const userOwnsTheRoom = computed(() => (roomCode: string): boolean => {
+    if (!userStore.isLogged) return false;
+
+    let room: RoomWithUserCountType | undefined;
+
+    room = rooms.value.find((room) => room.code === roomCode);
+    if (undefined === room) {
+      room = userRooms.value.find((room) => room.code === roomCode);
+    }
+
+    if (undefined === room) return false;
+
+    return room.creator.id === userStore.user?.id;
   });
 
   const findAll = async (): Promise<boolean> => {
@@ -130,6 +144,7 @@ export const useRoomStore = defineStore('room', () => {
     rooms,
     userRooms,
     getRoomState,
+    userOwnsTheRoom,
     findAll,
     findUserRooms,
     create,

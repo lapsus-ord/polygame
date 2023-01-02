@@ -6,13 +6,12 @@ export type RoomType = {
   state: RoomState;
   creator: UserType;
   gameDefinition: string;
-  nbOfUsers: number;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type RoomWithUserCountType = RoomType & {
-  nbOfUsers: number;
+  userCount: number;
 };
 
 export type RoomWithUsersType = RoomType & {

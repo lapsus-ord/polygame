@@ -16,7 +16,7 @@ export type RoomWithUsersType = RoomType & {
   users: RoomUserType[];
 };
 
-export type RoomsType = Array<RoomType & { nbOfUsers: number }>;
+export type RoomsType = Array<RoomType & { userCount: number }>;
 
 // Prisma selector types
 type PrismaRoomUserType = { id: boolean; username: boolean; role: boolean };

@@ -45,7 +45,7 @@ export class RoomsController {
             role: room.creator.role,
           },
           gameDefinition: room.game.definitionSlug,
-          nbOfUsers: await this.rooms.getNbOfUsersInTheRoom(room),
+          userCount: await this.rooms.getUserCountInTheRoom(room),
           createdAt: room.createdAt,
           updatedAt: room.updatedAt,
         };

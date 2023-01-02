@@ -22,7 +22,10 @@
         </p>
       </div>
 
-      <aside class="absolute bottom-4 right-4 flex items-center">
+      <aside
+        v-if="roomStore.userOwnsTheRoom(room.code)"
+        class="absolute bottom-4 right-4 flex items-center"
+      >
         <button class="delete-btn" type="button" @click.prevent="handleDelete">
           <Icon name="noto:wastebasket" size="25px" />
         </button>
@@ -32,10 +35,10 @@
 </template>
 
 <script setup lang="ts">
-import { RoomType } from '~/typings/room.type';
+import { RoomWithUserCountType } from '~/typings/room.type';
 
 const props = defineProps<{
-  room: RoomType;
+  room: RoomWithUserCountType;
 }>();
 
 const roomStore = useRoomStore();
@@ -56,9 +59,9 @@ const getGameName = computed(() => {
 });
 
 const userCountPlurals = computed(() =>
-  props.room.nbOfUsers > 1
-    ? `${props.room.nbOfUsers} joueurs`
-    : `${props.room.nbOfUsers} joueur`
+  props.room.userCount > 1
+    ? `${props.room.userCount} joueurs`
+    : `${props.room.userCount} joueur`
 );
 
 const handleDelete = () => {
