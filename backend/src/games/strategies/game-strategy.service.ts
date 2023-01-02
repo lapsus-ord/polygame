@@ -5,7 +5,7 @@ import { errors } from '../../error.message';
 
 @Injectable()
 export class GameStrategy {
-  private strategies: MapGameStrategy = {
+  public static strategies: MapGameStrategy = {
     bombparty: BombpartyStrategy,
     'cowboy-clicker': BombpartyStrategy, // TODO: not implemented
   };
@@ -14,7 +14,7 @@ export class GameStrategy {
     config: Prisma.JsonObject;
     data: Prisma.JsonObject;
   } {
-    const strategy = this.strategies[strategySlug];
+    const strategy = GameStrategy.strategies[strategySlug];
     if (undefined === strategy) {
       throw new NotFoundException(errors.gameDefinitions.notFound);
     }

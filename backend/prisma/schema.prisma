@@ -59,7 +59,7 @@ model Room {
   isPublic Boolean   @map("is_public")
   state    RoomState
 
-  game      Game @relation(fields: [gameId], references: [id])
+  game      Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
   gameId    Int  @map("game_id")
   creator   User @relation(fields: [creatorId], references: [id])
   creatorId Int  @map("creator_id")
@@ -81,7 +81,7 @@ model Game {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  definition     GameDefinition @relation(fields: [definitionSlug], references: [slug])
+  definition     GameDefinition @relation(fields: [definitionSlug], references: [slug], onDelete: Cascade)
   definitionSlug String         @map("definition_slug")
   config         Json
   data           Json
@@ -104,7 +104,7 @@ model GameDefinition {
   logo        String @default("🕹️") // emote or from icones.js.org
   description String @default("")
   enabled     Boolean @default(false)
-  color     String  @default("#fff") @map("color")
+  color     String  @default("#fff")
 
   Game Game[]
 

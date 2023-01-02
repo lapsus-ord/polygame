@@ -24,5 +24,10 @@ export const errors = {
   },
   gameDefinitions: {
     notFound: 'game_definition.not_found',
+    notImplemented: 'game_definition.not_implemented',
+    slugNotEmpty: 'game_definition.slug.not_empty',
+    slugTaken: 'game_definition.slug.taken',
+    nameNotEmpty: 'game_definition.name.not_empty',
+    colorIsNotHex: 'game_definition.color.not_hex',
   },
 };
