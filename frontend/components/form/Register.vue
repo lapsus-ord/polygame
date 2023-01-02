@@ -12,7 +12,7 @@
         placeholder="Exemple : john.doe"
         autocomplete="username"
         required
-        :class="`input input-bordered ${errors.length ? 'input-error' : ''}`"
+        :class="`input input-bordered ${hasErrors ? 'input-error' : ''}`"
       />
     </div>
     <div class="form-control">
@@ -24,14 +24,9 @@
         placeholder="********"
         autocomplete="new-password"
         required
-        :class="`input input-bordered ${errors.length ? 'input-error' : ''}`"
+        :class="`input input-bordered ${hasErrors ? 'input-error' : ''}`"
       />
     </div>
-
-    <p v-for="error in errors" :key="error" class="whitespace-wrap text-center">
-      <Icon name="twemoji:warning" size="1.5rem" class="mr-2" />
-      <span class="text-error text-lg font-bold">{{ error }}</span>
-    </p>
 
     <button type="submit" class="btn btn-primary mt-1">
       <Icon name="carbon:send-alt-filled" size="1.5rem" />
@@ -45,15 +40,12 @@ const authStore = useAuthStore();
 
 const username = ref('');
 const password = ref('');
-const errors = ref([] as string[]);
+const hasErrors = ref(false);
 
 const handleRegister = () => {
   authStore.register(username.value, password.value).then((result) => {
-    if (result.hasSucceeded) {
-      navigateTo('/');
-    } else {
-      errors.value = result.data.messages;
-    }
+    if (result) navigateTo('/');
+    else hasErrors.value = true;
   });
 };
 </script>

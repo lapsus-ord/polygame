@@ -5,7 +5,6 @@ import {
   RoomWithUserCountType,
   RoomWithUsersType,
 } from '~/typings/room.type';
-import { ResultType } from '~/typings/auth.type';
 
 const roomRoutes = {
   findAll: {
@@ -30,15 +29,24 @@ export const useRoomStore = defineStore('room', () => {
   const rooms = ref([] as RoomType[]);
   const userRooms = ref([] as RoomType[]);
 
+  const config = useRuntimeConfig();
+  const userStore = useUserStore();
+  const toastStore = useToastStore();
+
   const getRoomState = computed(() => (roomState: RoomState) => {
-    if (RoomState.WAITING === roomState) return 'En attente';
-    if (RoomState.IN_PROGRESS === roomState) return 'En jeu';
-    if (RoomState.FINISHED === roomState) return 'Fini';
-    return '';
+    switch (roomState) {
+      case RoomState.WAITING:
+        return 'En attente';
+      case RoomState.IN_PROGRESS:
+        return 'En jeu';
+      case RoomState.FINISHED:
+        return 'Fini';
+      default:
+        return '';
+    }
   });
 
-  const findAll = async (): Promise<ResultType> => {
-    const config = useRuntimeConfig();
+  const findAll = async (): Promise<boolean> => {
     const { data, error } = await useFetch<RoomWithUserCountType[]>(
       config.public.api_base + roomRoutes.findAll.uri,
       {
@@ -49,20 +57,11 @@ export const useRoomStore = defineStore('room', () => {
 
     rooms.value = data.value;
 
-    return {
-      hasSucceeded: true,
-      data: { status: 0, messages: [] },
-    };
+    return true;
   };
 
-  const findUserRooms = async () => {
-    const userStore = useUserStore();
-    if (!userStore.isLogged) {
-      return {
-        hasSucceeded: false,
-        data: { status: 0, messages: [] },
-      };
-    }
+  const findUserRooms = async (): Promise<boolean> => {
+    if (!userStore.isLogged) return false;
 
     const userId = userStore.user?.id ?? 0;
 
@@ -76,17 +75,14 @@ export const useRoomStore = defineStore('room', () => {
 
     userRooms.value = data.value;
 
-    return {
-      hasSucceeded: true,
-      data: { status: 0, messages: [] },
-    };
+    return true;
   };
 
   const create = async (
     name: string,
     definitionSlug: string,
     isPublic: boolean
-  ) => {
+  ): Promise<boolean> => {
     const { data, error } = await useAuthFetch(roomRoutes.create.uri, {
       method: roomRoutes.create.method,
       body: {
@@ -99,14 +95,12 @@ export const useRoomStore = defineStore('room', () => {
 
     const room: RoomWithUsersType = data.value;
     navigateTo(`/rooms/${room.code}`);
+    toastStore.push(ToastType.SUCCESS, 'Création du salon réussi 👍');
 
-    return {
-      hasSucceeded: true,
-      data: { status: 0, messages: [] },
-    };
+    return true;
   };
 
-  const deleteRoom = async (roomCode: string) => {
+  const deleteRoom = async (roomCode: string): Promise<boolean> => {
     const { data, error } = await useAuthFetch(
       roomRoutes.delete.uri(roomCode),
       {
@@ -115,12 +109,13 @@ export const useRoomStore = defineStore('room', () => {
     );
     if (null === data.value) return handleFetchError(error.value);
 
+    toastStore.push(
+      ToastType.SUCCESS,
+      `Suppression du salon "${data.value.name}" réussi 👍`
+    );
     refreshRooms();
 
-    return {
-      hasSucceeded: true,
-      data: { status: 0, messages: [] },
-    };
+    return true;
   };
 
   const refreshRooms = () => {

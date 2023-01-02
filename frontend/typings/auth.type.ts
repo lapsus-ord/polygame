@@ -13,11 +13,6 @@ export type JwtDataType = {
   exp: number; // Expiration time
 };
 
-export type ResultType = {
-  hasSucceeded: boolean;
-  data: ResultDataType;
-};
-
 export type ResultDataType = {
   status: number;
   messages: string[];

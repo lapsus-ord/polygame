@@ -10,9 +10,14 @@ export const useUserStore = defineStore(
     // State
     const user: Ref<UserType | null> = ref(null);
 
+    // Imported stores
+    const authStore = useAuthStore();
+    const roomStore = useRoomStore();
+    const gameStore = useGameStore();
+
     // Getters
     const isLogged = computed(() => {
-      return useAuthStore().isAuthenticated && null !== user.value;
+      return authStore.isAuthenticated && null !== user.value;
     });
 
     const isAdmin = computed(() => {
@@ -30,8 +35,6 @@ export const useUserStore = defineStore(
 
     const reset = () => {
       user.value = null;
-      const roomStore = useRoomStore();
-      const gameStore = useGameStore();
       roomStore.resetUserRooms();
       gameStore.resetAdminGameDefinitions();
     };

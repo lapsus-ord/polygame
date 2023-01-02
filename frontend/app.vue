@@ -8,6 +8,8 @@
       <NuxtPage />
     </NuxtLayout>
 
+    <Toasts />
+
     <footer class="footer footer-center py-2 bg-neutral z-10">
       <div class="items-center grid-flow-col text-neutral-content">
         <Icon name="logos:partytown-icon" size="20px" />

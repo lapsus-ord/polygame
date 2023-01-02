@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { Ref } from 'vue';
 import jwtDecode from 'jwt-decode';
-import { ResultType, JwtDataType, TokensType } from '~/typings/auth.type';
+import { JwtDataType, TokensType } from '~/typings/auth.type';
 import { handleFetchError } from '~/utils/handleFetchError';
 
 const authRoutes = {
@@ -28,6 +28,9 @@ export const useAuthStore = defineStore(
   () => {
     const accessToken: Ref<string | null> = ref(null);
     const refreshToken: Ref<string | null> = ref(null);
+
+    const config = useRuntimeConfig();
+    const userStore = useUserStore();
 
     const isAuthenticated = computed(() => {
       let refreshTokenHasExpired = false;
@@ -58,15 +61,13 @@ export const useAuthStore = defineStore(
     const init = (newAccessToken: string, newRefreshToken: string) => {
       accessToken.value = newAccessToken;
       refreshToken.value = newRefreshToken;
-      const userStore = useUserStore();
       userStore.init(jwtDecode<JwtDataType>(accessToken.value));
     };
 
     const login = async (
       username: string,
       password: string
-    ): Promise<ResultType> => {
-      const config = useRuntimeConfig();
+    ): Promise<boolean> => {
       const { data, error } = await useFetch<TokensType>(
         config.public.api_base + authRoutes.login.uri,
         {
@@ -81,17 +82,13 @@ export const useAuthStore = defineStore(
 
       init(data.value.access_token, data.value.refresh_token);
 
-      return {
-        hasSucceeded: true,
-        data: { status: 0, messages: [] },
-      };
+      return true;
     };
 
     const register = async (
       username: string,
       password: string
-    ): Promise<ResultType> => {
-      const config = useRuntimeConfig();
+    ): Promise<boolean> => {
       const { data, error } = await useFetch<TokensType>(
         config.public.api_base + authRoutes.register.uri,
         {
@@ -106,10 +103,7 @@ export const useAuthStore = defineStore(
 
       init(data.value.access_token, data.value.refresh_token);
 
-      return {
-        hasSucceeded: true,
-        data: { status: 0, messages: [] },
-      };
+      return true;
     };
 
     const logout = () => {
@@ -121,7 +115,6 @@ export const useAuthStore = defineStore(
     const reset = () => {
       accessToken.value = null;
       refreshToken.value = null;
-      const userStore = useUserStore();
       userStore.reset();
     };
 

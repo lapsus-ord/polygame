@@ -42,7 +42,8 @@ const refreshTokens = async () => {
   );
   if (null === data.value) {
     authStore.reset();
-    return error.value;
+
+    return handleFetchError(error.value);
   }
 
   authStore.init(data.value.access_token, data.value.refresh_token);

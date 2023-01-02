@@ -3,8 +3,7 @@ export type GameDefinitionType = {
   name: string;
   logo: string;
   description: string;
-  bgColor: string;
-  textColor: string;
+  color: string;
 };
 
 export type GameDefinitionAdminType = GameDefinitionType & {
