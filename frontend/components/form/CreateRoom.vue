@@ -1,30 +1,36 @@
 <template>
-  <form @submit.prevent="handleCreateRoom">
+  <form method="post" @submit.prevent="handleCreateRoom">
     <h1 class="mb-4 text-primary">{{ title }}</h1>
 
     <div class="list-game-selection">
       <GameDefinitionCard
         v-for="(definition, index) in gameStore.definitions"
         :key="definition.slug"
+        v-model:game-selected="gameSelected"
         :definition="definition"
         :is-checked="index === 0"
       />
     </div>
 
-    <div class="flex items-center overflow-clip">
+    <div class="line">
       <input
+        v-model="name"
         type="text"
         placeholder="Nom du salon"
-        class="input input-bordered text-lg font-semibold tracking-wider grow w-0 min-w-0 max-w-xs"
+        class="input input-bordered text-lg font-semibold tracking-wider w-full sm:grow sm:w-0 sm:min-w-0 sm:max-w-xs"
         minlength="3"
         maxlength="20"
         spellcheck="false"
         autocomplete="off"
         required
-        :value="`Chez ${userStore.user?.username ?? 'Guest'}`"
       />
-      <RockerSwitch left-switch="Public" right-switch="Privé" />
-      <button type="submit" class="btn btn-primary px-10">
+      <RockerSwitch
+        v-model:is-checked-event="isPublic"
+        :is-checked="true"
+        left-switch="Public"
+        right-switch="Privé"
+      />
+      <button type="submit" class="btn btn-primary w-full sm:px-10 sm:w-fit">
         {{ buttonTitle }}
       </button>
     </div>
@@ -38,15 +44,26 @@ defineProps<{
 }>();
 
 const userStore = useUserStore();
+const roomStore = useRoomStore();
 const gameStore = useGameStore();
 
+const gameSelected = ref(gameStore.defaultDefinition?.slug ?? null);
+const name = ref(`Chez ${userStore.user?.username ?? 'Guest'}`);
+const isPublic = ref(true);
+
 const handleCreateRoom = () => {
-  console.log('Room created');
+  if (null === gameSelected.value) return;
+
+  roomStore.create(name.value, gameSelected.value, isPublic.value);
 };
 </script>
 
-<style>
+<style scoped>
 .list-game-selection {
   @apply flex gap-3 mb-2 pb-1 overflow-x-scroll overflow-y-hidden;
+}
+
+.line {
+  @apply flex flex-col gap-2 sm:flex-row items-start sm:items-center overflow-clip;
 }
 </style>

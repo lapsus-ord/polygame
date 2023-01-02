@@ -1,4 +1,10 @@
-import { IsBoolean, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { errors } from '../../error.message';
 
 export class CreateRoomDto {
@@ -13,7 +19,5 @@ export class CreateRoomDto {
 
   @IsString()
   @IsNotEmpty({ message: errors.gameDefinitions.notFound })
-  @MinLength(3, { message: errors.rooms.nameMinLength })
-  @MaxLength(20, { message: errors.rooms.nameMaxLength })
   gameDefinitionSlug: string;
 }

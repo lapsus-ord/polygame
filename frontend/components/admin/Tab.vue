@@ -27,7 +27,9 @@
 defineProps<{
   tabPicked: string;
 }>();
-defineEmits(['update:tabPicked']);
+defineEmits<{
+  (event: 'update:tabPicked', id: string): void;
+}>();
 </script>
 
 <style scoped>

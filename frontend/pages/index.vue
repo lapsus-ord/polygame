@@ -55,7 +55,7 @@ const userStore = useUserStore();
 const roomStore = useRoomStore();
 const gameStore = useGameStore();
 
-Promise.all([
+await Promise.all([
   roomStore.findUserRooms(),
   roomStore.findAll(),
   gameStore.findAllDefinitions(),
@@ -81,9 +81,7 @@ Promise.all([
 
   border-width: 3px;
   border-style: dashed;
-  @apply sm:rounded-md;
-
-  padding: 1rem 1.5rem;
+  @apply sm:rounded-md p-4;
 }
 
 #create-room h1,

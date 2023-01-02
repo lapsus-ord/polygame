@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia';
-import { RoomType } from '~/typings/room.type';
+import {
+  RoomState,
+  RoomType,
+  RoomWithUserCountType,
+  RoomWithUsersType,
+} from '~/typings/room.type';
 import { ResultType } from '~/typings/auth.type';
 
 const roomRoutes = {
@@ -11,15 +16,30 @@ const roomRoutes = {
     method: 'get',
     uri: (userId: number) => `/users/${userId}/rooms`,
   },
+  create: {
+    method: 'post',
+    uri: '/rooms',
+  },
+  delete: {
+    method: 'delete',
+    uri: (roomCode: string) => `/rooms/${roomCode}`,
+  },
 };
 
 export const useRoomStore = defineStore('room', () => {
   const rooms = ref([] as RoomType[]);
   const userRooms = ref([] as RoomType[]);
 
+  const getRoomState = computed(() => (roomState: RoomState) => {
+    if (RoomState.WAITING === roomState) return 'En attente';
+    if (RoomState.IN_PROGRESS === roomState) return 'En jeu';
+    if (RoomState.FINISHED === roomState) return 'Fini';
+    return '';
+  });
+
   const findAll = async (): Promise<ResultType> => {
     const config = useRuntimeConfig();
-    const { data, error } = await useFetch<RoomType[]>(
+    const { data, error } = await useFetch<RoomWithUserCountType[]>(
       config.public.api_base + roomRoutes.findAll.uri,
       {
         method: roomRoutes.findAll.method,
@@ -62,9 +82,64 @@ export const useRoomStore = defineStore('room', () => {
     };
   };
 
+  const create = async (
+    name: string,
+    definitionSlug: string,
+    isPublic: boolean
+  ) => {
+    const { data, error } = await useAuthFetch(roomRoutes.create.uri, {
+      method: roomRoutes.create.method,
+      body: {
+        isPublic: isPublic,
+        name: name,
+        gameDefinitionSlug: definitionSlug,
+      },
+    });
+    if (null === data.value) return handleFetchError(error.value);
+
+    const room: RoomWithUsersType = data.value;
+    navigateTo(`/rooms/${room.code}`);
+
+    return {
+      hasSucceeded: true,
+      data: { status: 0, messages: [] },
+    };
+  };
+
+  const deleteRoom = async (roomCode: string) => {
+    const { data, error } = await useAuthFetch(
+      roomRoutes.delete.uri(roomCode),
+      {
+        method: roomRoutes.delete.method,
+      }
+    );
+    if (null === data.value) return handleFetchError(error.value);
+
+    refreshRooms();
+
+    return {
+      hasSucceeded: true,
+      data: { status: 0, messages: [] },
+    };
+  };
+
+  const refreshRooms = () => {
+    Promise.all([findAll(), findUserRooms()]).then();
+  };
+
   const resetUserRooms = () => {
     userRooms.value = [];
   };
 
-  return { rooms, userRooms, findAll, findUserRooms, resetUserRooms };
+  return {
+    rooms,
+    userRooms,
+    getRoomState,
+    findAll,
+    findUserRooms,
+    create,
+    deleteRoom,
+    refreshRooms,
+    resetUserRooms,
+  };
 });

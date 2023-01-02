@@ -17,6 +17,16 @@ export const useGameStore = defineStore('game', () => {
   const definitions = ref([] as GameDefinitionType[]);
   const adminDefinitions = ref([] as GameDefinitionType[]);
 
+  const defaultDefinition = computed(() => {
+    if (definitions.value.length === 0) return null;
+
+    return definitions.value[0];
+  });
+
+  const getDefinitionName = computed(() => (slug: string) => {
+    return definitions.value.find((def) => def.slug === slug)?.name ?? slug;
+  });
+
   const findAllDefinitions = async (): Promise<ResultType> => {
     const config = useRuntimeConfig();
     const { data, error } = await useFetch<GameDefinitionType[]>(
@@ -67,6 +77,8 @@ export const useGameStore = defineStore('game', () => {
   return {
     definitions,
     adminDefinitions,
+    defaultDefinition,
+    getDefinitionName,
     findAllDefinitions,
     findAllDefinitionsHasAdmin,
     resetAdminGameDefinitions,

@@ -11,6 +11,14 @@ export type RoomType = {
   updatedAt: Date;
 };
 
+export type RoomWithUserCountType = RoomType & {
+  nbOfUsers: number;
+};
+
+export type RoomWithUsersType = RoomType & {
+  users: UserType[];
+};
+
 export const RoomState = {
   WAITING: 'WAITING',
   IN_PROGRESS: 'IN_PROGRESS',

@@ -1,7 +1,11 @@
 <template>
   <div class="mx-2 rounded">
     <label class="rocker rocker-small">
-      <input type="checkbox" checked />
+      <input
+        type="checkbox"
+        :checked="isChecked"
+        @click="$emit('update:isCheckedEvent', !isChecked)"
+      />
       <span class="switch-left">{{ leftSwitch }}</span>
       <span class="switch-right">{{ rightSwitch }}</span>
     </label>
@@ -12,6 +16,10 @@
 defineProps<{
   leftSwitch: string;
   rightSwitch: string;
+  isChecked: boolean;
+}>();
+defineEmits<{
+  (event: 'update:isCheckedEvent', id: boolean): void;
 }>();
 </script>
 
@@ -82,7 +90,7 @@ defineProps<{
 .switch-right {
   right: 0.5rem;
   bottom: 0;
-  background-color: #bd5757;
+  background-color: #2383d8;
   color: #fff;
 }
 
@@ -108,8 +116,8 @@ defineProps<{
 }
 
 input:checked + .switch-left {
-  background-color: #0084d0;
-  color: #fff;
+  background-color: #7add8a;
+  color: #000;
   bottom: 0;
   left: 0.5rem;
   height: 2.5rem;
@@ -142,7 +150,7 @@ input:focus + .switch-left {
 }
 
 input:checked:focus + .switch-left {
-  color: #fff;
+  color: #000;
 }
 
 input:focus + .switch-left + .switch-right {
