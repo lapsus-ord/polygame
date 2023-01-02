@@ -4,4 +4,6 @@ export type UserType = {
   id: number;
   username: string;
   role: Role;
+  createdAt: string;
+  updatedAt: string;
 };

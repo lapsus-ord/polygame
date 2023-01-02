@@ -18,6 +18,8 @@ export type RoomWithUsersType = RoomType & {
 
 export type RoomsType = Array<RoomType & { userCount: number }>;
 
+export type AdminRoomType = RoomType & { userCount: number; isPublic: boolean };
+
 // Prisma selector types
 type PrismaRoomUserType = { id: boolean; username: boolean; role: boolean };
 

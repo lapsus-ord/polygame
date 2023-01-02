@@ -20,53 +20,38 @@
           </th>
           <th>Actions</th>
           <th>Nom</th>
+          <th>Type</th>
           <th>Créateur</th>
           <th>Participants</th>
           <th>Créé le</th>
+          <th>Mis à jour le</th>
         </tr>
       </thead>
 
       <tbody class="font-bold">
-        <tr>
+        <tr v-for="room in roomStore.adminRooms" :key="room.code">
           <th>
             <label>
               <input type="checkbox" class="checkbox" />
             </label>
           </th>
           <td><button class="btn btn-info btn-xs">Ouvrir</button></td>
-          <td>Chez René</td>
-          <td>René</td>
-          <td>2 utilisateur(s)</td>
-          <td>
-            <time datetime="12-09-2022T13:06:00">12/09/2022 à 13:06</time>
+          <td class="link hover:no-underline">
+            <NuxtLink :to="`/rooms/${room.code}`">{{ room.name }}</NuxtLink>
           </td>
-        </tr>
-        <tr>
-          <th>
-            <label>
-              <input type="checkbox" class="checkbox" />
-            </label>
-          </th>
-          <td><button class="btn btn-info btn-xs">Ouvrir</button></td>
-          <td>Chez Bernard</td>
-          <td>Bernard</td>
-          <td>2 utilisateur(s)</td>
+          <td v-if="room.isPublic" class="badge">Public</td>
+          <td v-else class="badge badge-sm">Privé</td>
+          <td>{{ room.creator.username }}</td>
+          <td>{{ userPlurals(room.userCount) }}</td>
           <td>
-            <time datetime="12-09-2022T13:06:00">12/09/2022 à 13:06</time>
+            <time :datetime="room.createdAt">
+              {{ getPrettyDate(room.createdAt) }}
+            </time>
           </td>
-        </tr>
-        <tr>
-          <th>
-            <label>
-              <input type="checkbox" class="checkbox" />
-            </label>
-          </th>
-          <td><button class="btn btn-info btn-xs">Ouvrir</button></td>
-          <td>Chez Henry</td>
-          <td>Henry</td>
-          <td>2 utilisateur(s)</td>
           <td>
-            <time datetime="12-09-2022T13:06:00">12/09/2022 à 13:06</time>
+            <time :datetime="room.updatedAt">
+              {{ getPrettyDate(room.updatedAt) }}
+            </time>
           </td>
         </tr>
       </tbody>
@@ -78,9 +63,11 @@
           </th>
           <th>Actions</th>
           <th>Nom</th>
+          <th>Type</th>
           <th>Créateur</th>
           <th>Participants</th>
           <th>Créé le</th>
+          <th>Mis à jour le</th>
         </tr>
       </tfoot>
     </table>
@@ -88,9 +75,18 @@
 </template>
 
 <script setup lang="ts">
-const checkboxAll = ref(false);
+import { getPrettyDate } from '~/utils/getPrettyDate';
 
-onBeforeMount(() => console.log('rooms tab loaded'));
+const roomStore = useRoomStore();
+await roomStore.findAllAdmin();
+
+const userPlurals = (userCount: number) => {
+  return userCount > 1 || userCount === 0
+    ? `${userCount} joueurs`
+    : `${userCount} joueur`;
+};
+
+const checkboxAll = ref(false);
 
 watch(checkboxAll, () => {
   const checkboxes = document.querySelectorAll(

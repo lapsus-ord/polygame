@@ -8,4 +8,6 @@ export type GameDefinitionType = {
 
 export type GameDefinitionAdminType = GameDefinitionType & {
   enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
 };

@@ -15,12 +15,14 @@ import {
 import { Role, Room, User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator/user.decorator';
 import { CreateRoomDto } from './types/create-room.dto';
-import { RoomsType, RoomType, RoomWithUsersType } from './types/rooms.type';
+import { AdminRoomType, RoomsType, RoomType, RoomWithUsersType } from './types/rooms.type';
 import { AccessTokenGuard } from 'src/auth/guard/access-token.guard';
 import { RoomsService } from './rooms.service';
 import { GameDefinitionService } from 'src/games/game-definitions.service';
 import { JoinLeaveRoomType } from './types/join-leave-room.type';
 import { errors } from '../error.message';
+import { RolesGuard } from '../auth/guard/roles.guard';
+import { Roles } from '../auth/decorator/roles.decorator';
 
 @Controller('rooms')
 export class RoomsController {
@@ -45,6 +47,33 @@ export class RoomsController {
             role: room.creator.role,
           },
           gameDefinition: room.game.definitionSlug,
+          userCount: await this.rooms.getUserCountInTheRoom(room),
+          createdAt: room.createdAt,
+          updatedAt: room.updatedAt,
+        };
+      })
+    );
+  }
+
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('all')
+  async findAllAdmin(): Promise<AdminRoomType[]> {
+    const rooms = await this.rooms.findAll();
+
+    return Promise.all(
+      rooms.map(async (room) => {
+        return {
+          code: room.code,
+          name: room.name,
+          state: room.state,
+          creator: {
+            id: room.creator.id,
+            username: room.creator.username,
+            role: room.creator.role,
+          },
+          gameDefinition: room.game.definitionSlug,
+          isPublic: room.isPublic,
           userCount: await this.rooms.getUserCountInTheRoom(room),
           createdAt: room.createdAt,
           updatedAt: room.updatedAt,

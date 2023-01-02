@@ -21,38 +21,37 @@
           <th>Actions</th>
           <th>Slug</th>
           <th>Nom</th>
+          <th>Logo</th>
           <th>Activé</th>
           <th>Créé le</th>
+          <th>Mis à jour le</th>
         </tr>
       </thead>
 
       <tbody class="font-bold">
-        <tr>
+        <tr v-for="game in gameStore.adminDefinitions" :key="game.slug">
           <th>
             <label>
               <input type="checkbox" class="checkbox" />
             </label>
           </th>
           <td><button class="btn btn-info btn-xs">Ouvrir</button></td>
-          <td>bombparty</td>
-          <td>Bomb Party</td>
-          <td><Icon name="twemoji:check-mark-button" size="20px" /></td>
-          <td>
-            <time datetime="12-09-2022T13:06:00">12/09/2022 à 13:06</time>
+          <td>{{ game.slug }}</td>
+          <td>{{ game.name }}</td>
+          <td><Icon :name="game.logo" size="20px" /></td>
+          <td v-if="game.enabled">
+            <Icon name="twemoji:check-mark-button" size="20px" />
           </td>
-        </tr>
-        <tr>
-          <th>
-            <label>
-              <input type="checkbox" class="checkbox" />
-            </label>
-          </th>
-          <td><button class="btn btn-info btn-xs">Ouvrir</button></td>
-          <td>cowboy-clicker</td>
-          <td>Ready Steady Bang</td>
-          <td><Icon name="twemoji:cross-mark" size="20px" /></td>
+          <td v-else><Icon name="twemoji:cross-mark" size="20px" /></td>
           <td>
-            <time datetime="12-09-2022T13:06:00">12/09/2022 à 13:06</time>
+            <time :datetime="game.createdAt">
+              {{ getPrettyDate(game.createdAt) }}
+            </time>
+          </td>
+          <td>
+            <time :datetime="game.updatedAt">
+              {{ getPrettyDate(game.updatedAt) }}
+            </time>
           </td>
         </tr>
       </tbody>
@@ -65,8 +64,10 @@
           <th>Actions</th>
           <th>Slug</th>
           <th>Nom</th>
+          <th>Logo</th>
           <th>Activé</th>
           <th>Créé le</th>
+          <th>Mis à jour le</th>
         </tr>
       </tfoot>
     </table>
@@ -74,9 +75,10 @@
 </template>
 
 <script setup lang="ts">
-const checkboxAll = ref(false);
+const gameStore = useGameStore();
+await gameStore.findAllDefinitionsHasAdmin();
 
-onBeforeMount(() => console.log('games tab loaded'));
+const checkboxAll = ref(false);
 
 watch(checkboxAll, () => {
   const checkboxes = document.querySelectorAll(

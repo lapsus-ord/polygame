@@ -1,5 +1,9 @@
 import { defineStore } from 'pinia';
-import { GameDefinitionType } from '~/typings/game.type';
+import {
+  GameDefinitionAdminType,
+  GameDefinitionType,
+} from '~/typings/game.type';
+import { Ref } from 'vue';
 
 const gameRoutes = {
   findAllDefinitions: {
@@ -13,8 +17,8 @@ const gameRoutes = {
 };
 
 export const useGameStore = defineStore('game', () => {
-  const definitions = ref([] as GameDefinitionType[]);
-  const adminDefinitions = ref([] as GameDefinitionType[]);
+  const definitions: Ref<GameDefinitionType[]> = ref([]);
+  const adminDefinitions: Ref<GameDefinitionAdminType[]> = ref([]);
 
   const config = useRuntimeConfig();
   const userStore = useUserStore();

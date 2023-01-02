@@ -1,14 +1,20 @@
 import { defineStore } from 'pinia';
 import {
+  AdminRoomType,
   RoomState,
   RoomWithUserCountType,
   RoomWithUsersType,
 } from '~/typings/room.type';
+import { Ref } from 'vue';
 
-const roomRoutes = {
+export const roomRoutes = {
   findAll: {
     method: 'get',
     uri: '/rooms',
+  },
+  findAllAdmin: {
+    method: 'get',
+    uri: '/rooms/all',
   },
   findUserRooms: {
     method: 'get',
@@ -25,8 +31,9 @@ const roomRoutes = {
 };
 
 export const useRoomStore = defineStore('room', () => {
-  const rooms = ref([] as RoomWithUserCountType[]);
-  const userRooms = ref([] as RoomWithUserCountType[]);
+  const rooms: Ref<RoomWithUserCountType[]> = ref([]);
+  const userRooms: Ref<RoomWithUserCountType[]> = ref([]);
+  const adminRooms: Ref<AdminRoomType[]> = ref([]);
 
   const config = useRuntimeConfig();
   const userStore = useUserStore();
@@ -70,6 +77,17 @@ export const useRoomStore = defineStore('room', () => {
     if (null === data.value) return handleFetchError(error.value);
 
     rooms.value = data.value;
+
+    return true;
+  };
+
+  const findAllAdmin = async (): Promise<boolean> => {
+    const { data, error } = await useAuthFetch(roomRoutes.findAllAdmin.uri, {
+      method: roomRoutes.findAllAdmin.method,
+    });
+    if (null === data.value) return handleFetchError(error.value);
+
+    adminRooms.value = data.value;
 
     return true;
   };
@@ -143,9 +161,11 @@ export const useRoomStore = defineStore('room', () => {
   return {
     rooms,
     userRooms,
+    adminRooms,
     getRoomState,
     userOwnsTheRoom,
     findAll,
+    findAllAdmin,
     findUserRooms,
     create,
     deleteRoom,

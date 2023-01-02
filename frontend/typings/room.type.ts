@@ -6,12 +6,16 @@ export type RoomType = {
   state: RoomState;
   creator: UserType;
   gameDefinition: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type RoomWithUserCountType = RoomType & {
   userCount: number;
+};
+
+export type AdminRoomType = RoomWithUserCountType & {
+  isPublic: boolean;
 };
 
 export type RoomWithUsersType = RoomType & {

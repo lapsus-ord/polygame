@@ -22,11 +22,12 @@
           <th>Pseudo</th>
           <th>Salons (actifs)</th>
           <th>Créé le</th>
+          <th>Mis à jour le</th>
         </tr>
       </thead>
 
       <tbody class="font-bold">
-        <tr>
+        <tr v-for="user in usersProcessed" :key="user.id">
           <th>
             <label>
               <input type="checkbox" class="checkbox" />
@@ -34,37 +35,21 @@
           </th>
           <td><button class="btn btn-info btn-xs">Ouvrir</button></td>
           <td>
-            René<span class="badge badge-warning badge-sm ml-2">admin</span>
+            {{ user.username }}
+            <span :class="`badge badge-sm ml-2 ${getUserBadge(user)}`">
+              {{ user.role }}
+            </span>
           </td>
-          <td>5 salon(s)</td>
+          <td>{{ user.roomCount }}</td>
           <td>
-            <time datetime="12-09-2022T13:06:00">12/09/2022 à 13:06</time>
+            <time :datetime="user.createdAt">
+              {{ getPrettyDate(user.createdAt) }}
+            </time>
           </td>
-        </tr>
-        <tr>
-          <th>
-            <label>
-              <input type="checkbox" class="checkbox" />
-            </label>
-          </th>
-          <td><button class="btn btn-info btn-xs">Ouvrir</button></td>
-          <td>Bernard</td>
-          <td>0 salon(s)</td>
           <td>
-            <time datetime="12-09-2022T13:06:00">12/09/2022 à 13:06</time>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            <label>
-              <input type="checkbox" class="checkbox" />
-            </label>
-          </th>
-          <td><button class="btn btn-info btn-xs">Ouvrir</button></td>
-          <td>Henry</td>
-          <td>1 salon(s)</td>
-          <td>
-            <time datetime="12-09-2022T13:06:00">12/09/2022 à 13:06</time>
+            <time :datetime="user.updatedAt">
+              {{ getPrettyDate(user.updatedAt) }}
+            </time>
           </td>
         </tr>
       </tbody>
@@ -78,6 +63,7 @@
           <th>Pseudo</th>
           <th>Salons (actif)</th>
           <th>Créé le</th>
+          <th>Mis à jour le</th>
         </tr>
       </tfoot>
     </table>
@@ -85,9 +71,34 @@
 </template>
 
 <script setup lang="ts">
-const checkboxAll = ref(false);
+import { UserType } from '~/typings/user.type';
+import { Ref } from 'vue';
+import { Role } from '~/typings/roles.type';
 
-onBeforeMount(() => console.log('users tab loaded'));
+const userStore = useUserStore();
+await userStore.findAll();
+
+const getUserBadge = (user: UserType) => {
+  if (user.role === Role.ADMIN) return 'badge-warning';
+  return '';
+};
+
+const users = userStore.usersForAdmin;
+const usersProcessed: Ref<Array<UserType & { roomCount: string }>> = ref([]);
+
+for (const user of users) {
+  const roomCount = await userStore.getRoomCountByUserId(user.id);
+  const result =
+    roomCount > 1 || roomCount === 0
+      ? `${roomCount} salons`
+      : `${roomCount} salon`;
+  usersProcessed.value.push({
+    ...user,
+    roomCount: result,
+  });
+}
+
+const checkboxAll = ref(false);
 
 watch(checkboxAll, () => {
   const checkboxes = document.querySelectorAll(
