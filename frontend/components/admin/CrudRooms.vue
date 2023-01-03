@@ -1,5 +1,5 @@
 <template>
-  <article class="grow md:basis-5/6 overflow-x-scroll">
+  <article class="grow md:basis-5/6">
     <h2 class="text-3xl mb-4 text-center">Salons (actifs)</h2>
     <div class="flex justify-center gap-4 mb-4">
       <button class="btn btn-outline btn-warning">
@@ -7,70 +7,57 @@
       </button>
     </div>
 
-    <table id="rooms-table" class="table table-compact w-full">
-      <colgroup>
-        <col class="w-0" />
-        <col class="w-0" />
-      </colgroup>
+    <div class="overflow-x-scroll">
+      <table id="rooms-table" class="table table-compact w-full">
+        <colgroup>
+          <col class="w-0" />
+          <col class="w-0" />
+        </colgroup>
 
-      <thead>
-        <tr>
-          <th>
-            <input v-model="checkboxAll" type="checkbox" class="checkbox" />
-          </th>
-          <th>Actions</th>
-          <th>Nom</th>
-          <th>Type</th>
-          <th>Créateur</th>
-          <th>Participants</th>
-          <th>Créé le</th>
-          <th>Mis à jour le</th>
-        </tr>
-      </thead>
+        <thead>
+          <tr>
+            <th>
+              <input v-model="checkboxAll" type="checkbox" class="checkbox" />
+            </th>
+            <th>Actions</th>
+            <th>Nom</th>
+            <th>Type</th>
+            <th>Créateur</th>
+            <th>Participants</th>
+            <th>Créé le</th>
+            <th>Mis à jour le</th>
+          </tr>
+        </thead>
 
-      <tbody class="font-bold">
-        <tr v-for="room in roomStore.adminRooms" :key="room.code">
-          <th>
-            <label>
-              <input type="checkbox" class="checkbox" />
-            </label>
-          </th>
-          <td><button class="btn btn-info btn-xs">Ouvrir</button></td>
-          <td class="link hover:no-underline">
-            <NuxtLink :to="`/rooms/${room.code}`">{{ room.name }}</NuxtLink>
-          </td>
-          <td v-if="room.isPublic" class="badge">Public</td>
-          <td v-else class="badge badge-sm">Privé</td>
-          <td>{{ room.creator.username }}</td>
-          <td>{{ userPlurals(room.userCount) }}</td>
-          <td>
-            <time :datetime="room.createdAt">
-              {{ getPrettyDate(room.createdAt) }}
-            </time>
-          </td>
-          <td>
-            <time :datetime="room.updatedAt">
-              {{ getPrettyDate(room.updatedAt) }}
-            </time>
-          </td>
-        </tr>
-      </tbody>
-
-      <tfoot>
-        <tr>
-          <th>
-            <input v-model="checkboxAll" type="checkbox" class="checkbox" />
-          </th>
-          <th>Actions</th>
-          <th>Nom</th>
-          <th>Type</th>
-          <th>Créateur</th>
-          <th>Participants</th>
-          <th>Créé le</th>
-          <th>Mis à jour le</th>
-        </tr>
-      </tfoot>
-    </table>
+        <tbody class="font-bold">
+          <tr v-for="room in roomStore.adminRooms" :key="room.code">
+            <th>
+              <label>
+                <input type="checkbox" class="checkbox" />
+              </label>
+            </th>
+            <td><button class="btn btn-info btn-xs">Ouvrir</button></td>
+            <td class="link hover:no-underline">
+              <NuxtLink :to="`/rooms/${room.code}`">{{ room.name }}</NuxtLink>
+            </td>
+            <td v-if="room.isPublic" class="badge">Public</td>
+            <td v-else class="badge badge-sm">Privé</td>
+            <td>{{ room.creator.username }}</td>
+            <td>{{ userPlurals(room.userCount) }}</td>
+            <td>
+              <time :datetime="room.createdAt">
+                {{ getPrettyDate(room.createdAt) }}
+              </time>
+            </td>
+            <td>
+              <time :datetime="room.updatedAt">
+                {{ getPrettyDate(room.updatedAt) }}
+              </time>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </article>
 </template>
 
