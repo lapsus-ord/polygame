@@ -6,7 +6,9 @@
       :class="`alert ${getAlertType(toast.type)}`"
     >
       <div>
-        <span class="hidden load-alert-type"></span>
+        <span
+          class="hidden alert-info alert-success alert-warning alert-error"
+        ></span>
         <button type="button" @click="toastStore.remove(index)">
           <Icon name="mdi:close-circle" size="1.5rem" />
         </button>
@@ -29,10 +31,6 @@ const getAlertType = computed(() => (type: ToastType) => `alert-${type}`);
   min-width: 33%;
   max-width: 33%;
   @apply z-30 drop-shadow-md w-1/3;
-}
-
-.load-alert-type {
-  @apply alert-info alert-success alert-warning alert-error;
 }
 
 .toast .alert {

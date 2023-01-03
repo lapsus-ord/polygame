@@ -2,13 +2,25 @@
   <article class="grow md:basis-5/6">
     <h2 class="text-3xl mb-4 text-center">Modèles de jeu</h2>
     <div class="flex justify-center gap-4 mb-4">
-      <button class="btn btn-outline btn-warning">
+      <button class="btn btn-outline btn-warning" @click="deleteDefinition">
         Supprimer la sélection
       </button>
     </div>
 
     <div class="overflow-x-scroll">
       <table id="games-table" class="table table-compact w-full">
+        <colgroup>
+          <col />
+          <col />
+          <col />
+          <col class="w-36" />
+          <col />
+          <col />
+          <col class="w-28" />
+          <col />
+          <col class="w-36" />
+        </colgroup>
+
         <thead>
           <tr>
             <th>
@@ -35,7 +47,7 @@
 
         <tbody class="font-medium">
           <tr
-            v-for="game in gameStore.adminDefinitions"
+            v-for="game in gameStore.sortedAdminDefinitions"
             :key="game.slug"
             :data-game-slug="game.slug"
             class="hover"
@@ -96,27 +108,52 @@
 </template>
 
 <script setup lang="ts">
-import { GameDefinitionAdminType } from '~/typings/game.type';
+import {
+  GameDefinitionAdminType,
+  UpdateDefinitionDto,
+} from '~/typings/game.type';
 
 const gameStore = useGameStore();
 await gameStore.findAllDefinitionsHasAdmin();
 
 const patchDefinition = (oldGame: GameDefinitionAdminType) => {
-  console.log(oldGame);
-  const newGame: NodeListOf<HTMLInputElement> = document.querySelectorAll(
-    `#games-table tr[data-game-slug="${oldGame.slug}"] input[type="text"]`
+  const newValues: NodeListOf<HTMLInputElement> = document.querySelectorAll(
+    `#games-table tr[data-game-slug="${oldGame.slug}"] input[type="text"],
+             #games-table tr[data-game-slug="${oldGame.slug}"] textarea`
   );
-  if (5 === newGame.length - 1) return;
+  if (5 === newValues.length - 1) return;
 
-  console.log(`slug: ${newGame[0].value}`);
-  console.log(`name: ${newGame[1].value}`);
-  console.log(`logo: ${newGame[2].value}`);
-  console.log(`description: ${newGame[3].value}`);
-  console.log(`color: ${newGame[4].value}`);
+  const newGame: UpdateDefinitionDto = {};
+  if (oldGame.slug !== newValues[0].value) newGame.slug = newValues[0].value;
+  if (oldGame.name !== newValues[1].value) newGame.name = newValues[1].value;
+  if (oldGame.description !== newValues[2].value)
+    newGame.description = newValues[2].value;
+  if (oldGame.color !== newValues[3].value) newGame.color = newValues[3].value;
+  if (oldGame.logo !== newValues[4].value) newGame.logo = newValues[4].value;
+
+  if (Object.keys(newGame).length === 0) return;
+  gameStore.patchDefinition(oldGame.slug, newGame);
 };
 
-const checkboxAll = ref(false);
+const deleteDefinition = () => {
+  const checkboxes = document.querySelectorAll(
+    '#games-table tbody input[type="checkbox"].checkbox:checked'
+  ) as NodeListOf<HTMLInputElement>;
 
+  for (const checkbox of checkboxes) {
+    if (!checkbox.checked) continue;
+
+    const definition: HTMLElement | null =
+      checkbox.closest('tr[data-game-slug]');
+    if (null === definition) continue;
+    if (undefined === definition.dataset.gameSlug) continue;
+
+    gameStore.deleteDefinition(definition.dataset.gameSlug);
+  }
+};
+
+// To check all checkbox
+const checkboxAll = ref(false);
 watch(checkboxAll, () => {
   const checkboxes = document.querySelectorAll(
     '#games-table .checkbox'

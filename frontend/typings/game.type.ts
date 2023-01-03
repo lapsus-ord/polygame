@@ -11,3 +11,19 @@ export type GameDefinitionAdminType = GameDefinitionType & {
   createdAt: string;
   updatedAt: string;
 };
+
+export type CreateDefinitionDto = {
+  slug: string;
+  name: string;
+  logo?: string;
+  description?: string;
+  color?: string;
+};
+
+export type UpdateDefinitionDto = {
+  slug?: string;
+  name?: string;
+  logo?: string;
+  description?: string;
+  color?: string;
+};

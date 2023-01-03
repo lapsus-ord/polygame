@@ -4,7 +4,7 @@
 
     <div class="list-game-selection">
       <GameDefinitionCard
-        v-for="(definition, index) in gameStore.definitions"
+        v-for="(definition, index) in gameStore.sortedDefinitions"
         :key="definition.slug"
         v-model:game-selected="gameSelected"
         :definition="definition"
