@@ -15,6 +15,13 @@
         {{ userStore.user?.role }}
       </span>
     </p>
+    <button
+      type="button"
+      class="btn btn-outline btn-error self-start"
+      @click="handleDelete"
+    >
+      Supprimer le compte
+    </button>
   </div>
 </template>
 
@@ -23,5 +30,14 @@ definePageMeta({
   middleware: 'auth',
 });
 
+const authStore = useAuthStore();
 const userStore = useUserStore();
+
+const handleDelete = () => {
+  userStore.deleteUser(userStore.user?.id ?? 0).then((result) => {
+    if (!result) return;
+    authStore.reset();
+    navigateTo('/');
+  });
+};
 </script>
