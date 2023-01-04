@@ -9,23 +9,23 @@ import { Ref } from 'vue';
 
 export const roomRoutes = {
   findAll: {
-    method: 'get',
+    method: 'GET',
     uri: '/rooms',
   },
   findAllAdmin: {
-    method: 'get',
+    method: 'GET',
     uri: '/rooms/all',
   },
   findUserRooms: {
-    method: 'get',
+    method: 'GET',
     uri: (userId: number) => `/users/${userId}/rooms`,
   },
   create: {
-    method: 'post',
+    method: 'POST',
     uri: '/rooms',
   },
   delete: {
-    method: 'delete',
+    method: 'DELETE',
     uri: (roomCode: string) => `/rooms/${roomCode}`,
   },
 };

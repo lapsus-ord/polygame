@@ -6,19 +6,19 @@ import { handleFetchError } from '~/utils/handleFetchError';
 
 const authRoutes = {
   login: {
-    method: 'post',
+    method: 'POST',
     uri: '/auth/login',
   },
   register: {
-    method: 'post',
+    method: 'POST',
     uri: '/auth/register',
   },
   logout: {
-    method: 'get',
+    method: 'GET',
     uri: '/auth/logout',
   },
   refresh: {
-    method: 'get',
+    method: 'GET',
     uri: '/auth/refresh',
   },
 };
