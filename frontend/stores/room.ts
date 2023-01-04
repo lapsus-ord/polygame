@@ -145,7 +145,7 @@ export const useRoomStore = defineStore('room', () => {
       ToastType.SUCCESS,
       `Suppression du salon "${data.value.name}" réussi 👍`
     );
-    refreshRooms();
+    findAllAdmin().then();
 
     return true;
   };

@@ -2,7 +2,7 @@
   <article class="grow md:basis-5/6 flex flex-col">
     <h2 class="text-3xl mb-4 text-center">Salons (actifs)</h2>
     <div class="flex flex-wrap justify-center gap-4 mt-6 mb-8">
-      <button class="btn btn-outline btn-warning">
+      <button class="btn btn-outline btn-warning" @click="deleteRooms">
         Supprimer&nbsp;<span class="hidden sm:inline">la sélection</span>
       </button>
     </div>
@@ -20,6 +20,7 @@
             </th>
             <th>Nom</th>
             <th>Type</th>
+            <th>Jeu</th>
             <th>Créateur</th>
             <th>Participants</th>
             <th>Créé le</th>
@@ -31,11 +32,12 @@
           <tr
             v-for="room in roomStore.adminRooms"
             :key="room.code"
+            :data-room-id="room.code"
             class="hover"
           >
             <th>
               <label>
-                <input type="checkbox" class="checkbox" />
+                <input type="checkbox" class="checkbox delete-checkbox" />
               </label>
             </th>
             <td class="link hover:no-underline">
@@ -44,6 +46,12 @@
             <td>
               <span v-if="room.isPublic" class="badge badge-sm">Public</span>
               <span v-else class="badge badge-sm">Privé</span>
+            </td>
+            <td>
+              {{
+                gameStore.getDefinition(room.gameDefinition)?.name ??
+                room.gameDefinition
+              }}
             </td>
             <td>{{ room.creator.username }}</td>
             <td>{{ userPlurals(room.userCount) }}</td>
@@ -68,6 +76,7 @@
 import { getPrettyDate } from '~/utils/getPrettyDate';
 
 const roomStore = useRoomStore();
+const gameStore = useGameStore();
 await roomStore.findAllAdmin();
 
 const userPlurals = (userCount: number) => {
@@ -76,11 +85,27 @@ const userPlurals = (userCount: number) => {
     : `${userCount} joueur`;
 };
 
-const checkboxAll = ref(false);
+const deleteRooms = () => {
+  const checkboxes = document.querySelectorAll(
+    '#rooms-table tbody input[type="checkbox"].delete-checkbox:checked'
+  ) as NodeListOf<HTMLInputElement>;
 
+  for (const checkbox of checkboxes) {
+    if (!checkbox.checked) continue;
+
+    const room: HTMLElement | null = checkbox.closest('tr[data-room-id]');
+    if (null === room) continue;
+    if (undefined === room.dataset.roomId) continue;
+
+    roomStore.deleteRoom(room.dataset.roomId);
+  }
+};
+
+// To check all checkbox
+const checkboxAll = ref(false);
 watch(checkboxAll, () => {
   const checkboxes = document.querySelectorAll(
-    '#rooms-table .checkbox'
+    '#rooms-table .delete-checkbox'
   ) as NodeListOf<HTMLInputElement>;
 
   for (const checkbox of checkboxes) {

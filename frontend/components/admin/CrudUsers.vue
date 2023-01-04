@@ -144,7 +144,7 @@ const deleteUsers = () => {
 const checkboxAll = ref(false);
 watch(checkboxAll, () => {
   const checkboxes = document.querySelectorAll(
-    '#users-table .checkbox'
+    '#users-table .delete-checkbox'
   ) as NodeListOf<HTMLInputElement>;
 
   for (const checkbox of checkboxes) {
