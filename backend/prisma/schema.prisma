@@ -37,7 +37,7 @@ enum Role {
 // a User in a Room
 // list all parties where a User is currently playing or has played
 model UsersInRooms {
-  user     User     @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   Int      @map("user_id")
   room     Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
   roomId   Int      @map("room_id")
@@ -61,7 +61,7 @@ model Room {
 
   game      Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
   gameId    Int  @map("game_id")
-  creator   User @relation(fields: [creatorId], references: [id])
+  creator   User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId Int  @map("creator_id")
 
   users UsersInRooms[]

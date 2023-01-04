@@ -1,10 +1,13 @@
 import {
+  Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
   NotFoundException,
   Param,
   ParseIntPipe,
+  Patch,
   UseGuards,
 } from '@nestjs/common';
 import { Role, User } from '@prisma/client';
@@ -16,6 +19,8 @@ import { AccessTokenGuard } from '../auth/guard/access-token.guard';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { GetUser } from '../auth/decorator/user.decorator';
+import { errors } from '../error.message';
+import { UpdateUserDto } from './types/update-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -83,6 +88,32 @@ export class UsersController {
         updatedAt: room.updatedAt,
       };
     });
+  }
+
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserDto
+  ): Promise<FilteredUser> {
+    if (undefined !== dto.username) {
+      const definitions = await this.users.findAll();
+      const isAlreadyTaken = definitions.find(
+        (user) => user.username === dto.username
+      );
+      if (undefined !== isAlreadyTaken)
+        throw new ConflictException(errors.users.usernameTaken);
+    }
+
+    const user = await this.users.update(id, dto);
+    return {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 
   @UseGuards(AccessTokenGuard)
