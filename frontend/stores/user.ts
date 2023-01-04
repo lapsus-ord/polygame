@@ -1,17 +1,25 @@
 import { defineStore } from 'pinia';
 import { Ref } from 'vue';
-import { UserType } from '~/typings/user.type';
+import { UpdateUserDto, UserType } from '~/typings/user.type';
 import { Role } from '~/typings/roles.type';
 import { JwtDataType } from '~/typings/auth.type';
 import { roomRoutes } from '~/stores/room';
 
 const userRoutes = {
   findAll: {
-    method: 'get',
+    method: 'GET',
     uri: '/users',
   },
   find: {
-    method: 'get',
+    method: 'GET',
+    uri: (userId: number) => `/users/${userId}`,
+  },
+  patch: {
+    method: 'PATCH',
+    uri: (userId: number) => `/users/${userId}`,
+  },
+  delete: {
+    method: 'DELETE',
     uri: (userId: number) => `/users/${userId}`,
   },
 };
@@ -27,6 +35,7 @@ export const useUserStore = defineStore(
     const authStore = useAuthStore();
     const roomStore = useRoomStore();
     const gameStore = useGameStore();
+    const toastStore = useToastStore();
 
     // Getters
     const isLogged = computed(() => {
@@ -54,6 +63,14 @@ export const useUserStore = defineStore(
       return data.value.length;
     });
 
+    const sortedUsers = computed((): UserType[] => {
+      return usersForAdmin.value.sort((a, b) => {
+        const createdUserA = new Date(a.createdAt).getTime();
+        const createdUserB = new Date(b.createdAt).getTime();
+        return createdUserA - createdUserB;
+      });
+    });
+
     // Actions
     const findAll = async () => {
       if (!isLogged || !isAdmin) return false;
@@ -79,6 +96,39 @@ export const useUserStore = defineStore(
       return true;
     };
 
+    const patch = async (userId: number, dto: UpdateUserDto) => {
+      const { data, error } = await useAuthFetch(userRoutes.patch.uri(userId), {
+        method: userRoutes.patch.method,
+        body: dto,
+      });
+      if (null === data.value) return handleFetchError(error.value);
+
+      toastStore.push(
+        ToastType.SUCCESS,
+        `Utilisateur '${data.value.username}' modifié avec succès`
+      );
+      findAll().then();
+
+      return true;
+    };
+
+    const deleteUser = async (userId: number) => {
+      const { data, error } = await useAuthFetch(
+        userRoutes.delete.uri(userId),
+        {
+          method: userRoutes.delete.method,
+        }
+      );
+      if (null === data.value) return handleFetchError(error.value);
+
+      toastStore.push(
+        ToastType.SUCCESS,
+        `Utilisateur '${data.value.username}' supprimé avec succès`
+      );
+
+      return true;
+    };
+
     const init = (userData: JwtDataType) => {
       find(userData.sub).then();
     };
@@ -95,7 +145,10 @@ export const useUserStore = defineStore(
       isLogged,
       isAdmin,
       getRoomCountByUserId,
+      sortedUsers,
       findAll,
+      patch,
+      deleteUser,
       init,
       reset,
     };

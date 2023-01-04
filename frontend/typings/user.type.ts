@@ -7,3 +7,8 @@ export type UserType = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type UpdateUserDto = {
+  username?: string;
+  role?: Role;
+};

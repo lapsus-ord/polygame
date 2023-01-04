@@ -1,20 +1,27 @@
 <template>
-  <article class="grow md:basis-5/6">
+  <article class="grow md:basis-5/6 flex flex-col">
     <h2 class="text-3xl mb-4 text-center">Modèles de jeu</h2>
-    <div class="flex justify-center gap-4 mb-4">
-      <button class="btn btn-outline btn-warning" @click="deleteDefinition">
-        Supprimer la sélection
+    <div class="flex flex-wrap justify-center gap-4 mt-6 mb-8">
+      <button class="btn btn-outline btn-warning" @click="deleteDefinitions">
+        Supprimer&nbsp;<span class="hidden sm:inline">la sélection</span>
       </button>
+      <Modal
+        btn-title="Créer"
+        btn-classes="btn btn-outline btn-success"
+        modal-title="Créer un modèle de jeu"
+      >
+        <CreateDefinition />
+      </Modal>
     </div>
 
-    <div class="overflow-x-scroll">
+    <div class="grow overflow-x-scroll">
       <table id="games-table" class="table table-compact w-full">
         <colgroup>
-          <col />
-          <col />
-          <col />
+          <col class="w-0" />
+          <col class="w-0" />
+          <col class="w-0" />
           <col class="w-36" />
-          <col />
+          <col class="w-36" />
           <col />
           <col class="w-28" />
           <col />
@@ -54,7 +61,7 @@
           >
             <th>
               <label>
-                <input type="checkbox" class="checkbox" />
+                <input type="checkbox" class="checkbox delete-checkbox" />
               </label>
             </th>
             <td class="text-center">
@@ -66,11 +73,13 @@
                 SAUV
               </button>
             </td>
-            <td v-if="game.enabled" class="text-center">
-              <Icon name="twemoji:check-mark-button" size="20px" />
-            </td>
-            <td v-else class="text-center">
-              <Icon name="twemoji:cross-mark" size="20px" />
+            <td class="text-center">
+              <input
+                v-model="game.enabled"
+                type="checkbox"
+                class="toggle toggle-success"
+                @change="switchDefinition(game)"
+              />
             </td>
             <td>
               <input type="text" :value="game.slug" class="input" />
@@ -112,6 +121,7 @@ import {
   GameDefinitionAdminType,
   UpdateDefinitionDto,
 } from '~/typings/game.type';
+import CreateDefinition from '~/components/form/CreateDefinition.vue';
 
 const gameStore = useGameStore();
 await gameStore.findAllDefinitionsHasAdmin();
@@ -135,9 +145,15 @@ const patchDefinition = (oldGame: GameDefinitionAdminType) => {
   gameStore.patchDefinition(oldGame.slug, newGame);
 };
 
-const deleteDefinition = () => {
+const switchDefinition = (game: GameDefinitionAdminType) => {
+  gameStore
+    .switchDefinition(game.slug)
+    .then((result) => (game.enabled = result));
+};
+
+const deleteDefinitions = () => {
   const checkboxes = document.querySelectorAll(
-    '#games-table tbody input[type="checkbox"].checkbox:checked'
+    '#games-table tbody input[type="checkbox"].delete-checkbox:checked'
   ) as NodeListOf<HTMLInputElement>;
 
   for (const checkbox of checkboxes) {
@@ -156,7 +172,7 @@ const deleteDefinition = () => {
 const checkboxAll = ref(false);
 watch(checkboxAll, () => {
   const checkboxes = document.querySelectorAll(
-    '#games-table .checkbox'
+    '#games-table .delete-checkbox'
   ) as NodeListOf<HTMLInputElement>;
 
   for (const checkbox of checkboxes) {
@@ -168,5 +184,9 @@ watch(checkboxAll, () => {
 <style>
 #games-table tbody .input {
   @apply input-sm input-bordered text-base w-full px-2;
+}
+
+#games-table thead th {
+  @apply text-base;
 }
 </style>

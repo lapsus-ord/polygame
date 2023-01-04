@@ -1,5 +1,5 @@
 <template>
-  <form method="post" @submit.prevent="handleCreateRoom">
+  <form @submit.prevent="handleCreateRoom">
     <h1 class="mb-4 text-primary">{{ title }}</h1>
 
     <div class="list-game-selection">

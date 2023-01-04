@@ -1,16 +1,15 @@
 <template>
-  <article class="grow md:basis-5/6">
+  <article class="grow md:basis-5/6 flex flex-col">
     <h2 class="text-3xl mb-4 text-center">Salons (actifs)</h2>
-    <div class="flex justify-center gap-4 mb-4">
+    <div class="flex flex-wrap justify-center gap-4 mt-6 mb-8">
       <button class="btn btn-outline btn-warning">
-        Supprimer la sélection
+        Supprimer&nbsp;<span class="hidden sm:inline">la sélection</span>
       </button>
     </div>
 
-    <div class="overflow-x-scroll">
+    <div class="grow overflow-x-scroll">
       <table id="rooms-table" class="table table-compact w-full">
         <colgroup>
-          <col class="w-0" />
           <col class="w-0" />
         </colgroup>
 
@@ -19,7 +18,6 @@
             <th>
               <input v-model="checkboxAll" type="checkbox" class="checkbox" />
             </th>
-            <th>Actions</th>
             <th>Nom</th>
             <th>Type</th>
             <th>Créateur</th>
@@ -29,19 +27,24 @@
           </tr>
         </thead>
 
-        <tbody class="font-bold">
-          <tr v-for="room in roomStore.adminRooms" :key="room.code">
+        <tbody class="font-medium">
+          <tr
+            v-for="room in roomStore.adminRooms"
+            :key="room.code"
+            class="hover"
+          >
             <th>
               <label>
                 <input type="checkbox" class="checkbox" />
               </label>
             </th>
-            <td><button class="btn btn-info btn-xs">Ouvrir</button></td>
             <td class="link hover:no-underline">
               <NuxtLink :to="`/rooms/${room.code}`">{{ room.name }}</NuxtLink>
             </td>
-            <td v-if="room.isPublic" class="badge">Public</td>
-            <td v-else class="badge badge-sm">Privé</td>
+            <td>
+              <span v-if="room.isPublic" class="badge badge-sm">Public</span>
+              <span v-else class="badge badge-sm">Privé</span>
+            </td>
             <td>{{ room.creator.username }}</td>
             <td>{{ userPlurals(room.userCount) }}</td>
             <td>
@@ -85,3 +88,10 @@ watch(checkboxAll, () => {
   }
 });
 </script>
+
+<style>
+#rooms-table thead th,
+#rooms-table tbody td {
+  @apply text-base;
+}
+</style>

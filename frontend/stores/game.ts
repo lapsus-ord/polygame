@@ -24,6 +24,10 @@ const gameRoutes = {
     method: 'PATCH',
     uri: (slug: string) => `/games/definitions/${slug}`,
   },
+  switchDefinition: {
+    method: 'PATCH',
+    uri: (slug: string) => `/games/definitions/${slug}/switch`,
+  },
   deleteDefinition: {
     method: 'DELETE',
     uri: (slug: string) => `/games/definitions/${slug}`,
@@ -100,7 +104,7 @@ export const useGameStore = defineStore('game', () => {
     );
     if (null === data.value) return handleFetchError(error.value);
 
-    toastStore.push(ToastType.SUCCESS, `Jeu '${dto.slug}' créé avec succès !`);
+    toastStore.push(ToastType.SUCCESS, `Jeu '${dto.slug}' créé avec succès`);
     findAllDefinitionsHasAdmin().then();
 
     return true;
@@ -123,8 +127,36 @@ export const useGameStore = defineStore('game', () => {
 
     toastStore.push(
       ToastType.SUCCESS,
-      `Jeu '${data.value.slug}' modifié avec succès !`
+      `Jeu '${data.value.slug}' modifié avec succès`
     );
+    findAllDefinitionsHasAdmin().then();
+
+    return true;
+  };
+
+  const switchDefinition = async (oldSlug: string): Promise<boolean> => {
+    if (!userStore.isAdmin) return false;
+
+    const { data, error } = await useAuthFetch(
+      gameRoutes.switchDefinition.uri(oldSlug),
+      {
+        method: gameRoutes.switchDefinition.method,
+      }
+    );
+    if (null === data.value) return handleFetchError(error.value);
+
+    const game: GameDefinitionAdminType = data.value;
+    if (game.enabled) {
+      toastStore.push(
+        ToastType.SUCCESS,
+        `Jeu '${data.value.slug}' activé avec succès`
+      );
+    } else {
+      toastStore.push(
+        ToastType.WARNING,
+        `Jeu '${data.value.slug}' désactivé avec succès`
+      );
+    }
     findAllDefinitionsHasAdmin().then();
 
     return true;
@@ -143,7 +175,7 @@ export const useGameStore = defineStore('game', () => {
 
     toastStore.push(
       ToastType.SUCCESS,
-      `Jeu '${data.value.slug}' supprimé avec succès !`
+      `Jeu '${data.value.slug}' supprimé avec succès`
     );
     findAllDefinitionsHasAdmin().then();
 
@@ -165,6 +197,7 @@ export const useGameStore = defineStore('game', () => {
     findAllDefinitionsHasAdmin,
     createDefinition,
     patchDefinition,
+    switchDefinition,
     deleteDefinition,
     resetAdminGameDefinitions,
   };

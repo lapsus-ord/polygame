@@ -1,5 +1,5 @@
 <template>
-  <ul class="tabs tabs-boxed mb-6 justify-center py-4">
+  <ul class="tabs tabs-boxed mb-6 justify-center p-4">
     <li
       :class="`tab ${tabPicked === 'users' ? 'tab-active' : ''}`"
       @click="$emit('update:tabPicked', 'users')"
@@ -34,6 +34,6 @@ defineEmits<{
 
 <style scoped>
 .tabs .tab {
-  @apply text-lg basis-1/3;
+  @apply text-lg w-32;
 }
 </style>
