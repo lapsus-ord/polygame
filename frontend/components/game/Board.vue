@@ -51,7 +51,8 @@ const isInRoom = computed(() => {
 });
 
 const isCreator = computed(() => {
-  const loggedUser = userStore.user as UserType;
+  if (null === userStore.user) return false;
+  const loggedUser = userStore.user;
   return room.value.creator.id === loggedUser.id;
 });
 
