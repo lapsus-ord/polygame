@@ -1,4 +1,5 @@
 import { UserType } from '~/typings/user.type';
+import { Role } from '~/typings/roles.type';
 
 export type RoomType = {
   code: string;
@@ -19,8 +20,10 @@ export type AdminRoomType = RoomWithUserCountType & {
 };
 
 export type RoomWithUsersType = RoomType & {
-  users: UserType[];
+  users: RoomUser[];
 };
+
+export type RoomUser = { id: number; username: string; role: Role };
 
 export const RoomState = {
   WAITING: 'WAITING',

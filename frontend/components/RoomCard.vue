@@ -88,7 +88,7 @@ const handleDelete = () => {
 }
 
 .user-count {
-  @apply font-light text-sm bg-neutral-content text-neutral rounded px-1;
+  @apply tracking-wider text-sm bg-neutral-content text-neutral rounded px-1;
 }
 
 .delete-btn {

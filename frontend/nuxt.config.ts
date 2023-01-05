@@ -2,6 +2,8 @@ export default defineNuxtConfig({
   ssr: false,
   app: {
     head: {
+      htmlAttrs: { lang: 'fr' },
+      title: 'Polygame',
       link: [{ rel: 'icon', href: '/img/favicon.ico', type: 'image/x-icon' }],
     },
   },

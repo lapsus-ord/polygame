@@ -20,6 +20,10 @@ export const roomRoutes = {
     method: 'GET',
     uri: (userId: number) => `/users/${userId}/rooms`,
   },
+  findByCode: {
+    method: 'GET',
+    uri: (roomCode: string) => `/rooms/${roomCode}`,
+  },
   create: {
     method: 'POST',
     uri: '/rooms',
@@ -27,6 +31,14 @@ export const roomRoutes = {
   delete: {
     method: 'DELETE',
     uri: (roomCode: string) => `/rooms/${roomCode}`,
+  },
+  join: {
+    method: 'GET',
+    uri: (roomCode: string) => `/rooms/${roomCode}/join`,
+  },
+  leave: {
+    method: 'GET',
+    uri: (roomCode: string) => `/rooms/${roomCode}/leave`,
   },
 };
 
@@ -110,6 +122,20 @@ export const useRoomStore = defineStore('room', () => {
     return true;
   };
 
+  const findByCode = async (
+    roomCode: string
+  ): Promise<RoomWithUsersType | boolean> => {
+    const { data } = await useFetch<RoomWithUsersType>(
+      config.public.api_base + roomRoutes.findByCode.uri(roomCode),
+      {
+        method: roomRoutes.findByCode.method,
+      }
+    );
+    if (null === data.value) return false;
+
+    return data.value;
+  };
+
   const create = async (
     name: string,
     definitionSlug: string,
@@ -150,6 +176,44 @@ export const useRoomStore = defineStore('room', () => {
     return true;
   };
 
+  const join = async (roomCode: string): Promise<boolean> => {
+    if (!userStore.isLogged) {
+      toastStore.push(
+        ToastType.WARNING,
+        "Vous n'êtes pas connecté, vous ne pouvez pas rejoindre la partie"
+      );
+      return false;
+    }
+    const { data, error } = await useAuthFetch(roomRoutes.join.uri(roomCode), {
+      method: roomRoutes.join.method,
+    });
+    if (null === data.value) handleFetchError(error.value);
+
+    toastStore.push(ToastType.INFO, 'Vous avez rejoint le salon');
+    findUserRooms().then();
+
+    return true;
+  };
+
+  const leave = async (roomCode: string): Promise<boolean> => {
+    if (!userStore.isLogged) {
+      toastStore.push(
+        ToastType.WARNING,
+        "Vous n'êtes pas connecté, vous ne pouvez pas rejoindre la partie"
+      );
+      return false;
+    }
+    const { data, error } = await useAuthFetch(roomRoutes.leave.uri(roomCode), {
+      method: roomRoutes.leave.method,
+    });
+    if (null === data.value) handleFetchError(error.value);
+
+    toastStore.push(ToastType.INFO, 'Vous avez quitté le salon');
+    findUserRooms().then();
+
+    return true;
+  };
+
   const refreshRooms = () => {
     Promise.all([findAll(), findUserRooms()]).then();
   };
@@ -167,8 +231,11 @@ export const useRoomStore = defineStore('room', () => {
     findAll,
     findAllAdmin,
     findUserRooms,
+    findByCode,
     create,
     deleteRoom,
+    join,
+    leave,
     refreshRooms,
     resetUserRooms,
   };

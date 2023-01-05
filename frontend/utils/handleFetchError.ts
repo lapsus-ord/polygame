@@ -2,14 +2,18 @@ import { ResultDataType } from '~/typings/auth.type';
 import { FetchError } from 'ofetch/dist/node';
 
 export const handleFetchError = (error: FetchError | null): boolean => {
+  if (null === error) return false;
+
   const toastStore = useToastStore();
+
+  if (undefined === error.data.statusCode || undefined === error.data.message) {
+    return false;
+  }
 
   const errorData: ResultDataType = {
     status: 0,
     messages: [],
   };
-
-  if (null === error) return false;
 
   errorData.status = error.data.statusCode;
   errorData.messages = [error.data.message]

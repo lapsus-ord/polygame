@@ -27,6 +27,7 @@
 <script setup lang="ts">
 useHead({
   titleTemplate: (title) => {
+    if ('Polygame' === title) return title;
     return title ? `${title} - Polygame` : 'Polygame';
   },
 });
