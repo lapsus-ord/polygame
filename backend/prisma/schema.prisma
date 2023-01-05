@@ -37,7 +37,7 @@ enum Role {
 // a User in a Room
 // list all parties where a User is currently playing or has played
 model UsersInRooms {
-  user     User     @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   Int      @map("user_id")
   room     Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
   roomId   Int      @map("room_id")
@@ -59,9 +59,9 @@ model Room {
   isPublic Boolean   @map("is_public")
   state    RoomState
 
-  game      Game @relation(fields: [gameId], references: [id])
+  game      Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
   gameId    Int  @map("game_id")
-  creator   User @relation(fields: [creatorId], references: [id])
+  creator   User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId Int  @map("creator_id")
 
   users UsersInRooms[]
@@ -81,7 +81,7 @@ model Game {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  definition     GameDefinition @relation(fields: [definitionSlug], references: [slug])
+  definition     GameDefinition @relation(fields: [definitionSlug], references: [slug], onDelete: Cascade)
   definitionSlug String         @map("definition_slug")
   config         Json
   data           Json
@@ -99,10 +99,12 @@ model GameDefinition {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  slug    String  @unique
-  name    String
-  enabled Boolean @default(false)
-  color   String  @default("#000")
+  slug        String  @unique
+  name        String
+  logo        String @default("🕹️") // emote or from icones.js.org
+  description String @default("")
+  enabled     Boolean @default(false)
+  color     String  @default("#fff")
 
   Game Game[]
 

@@ -1,12 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root, body, #__nuxt {
     height: 100%;
+    overflow-x: clip;
 }
 
 body {
-    /*@apply bg-gray-50;*/
-    height: 100%;
+    font-family: 'Outfit', sans-serif;
+    background: #ffd168 url('/img/pattern.png') repeat;
+    background-size: 225px;
+}
+
+h1 {
+    @apply text-2xl font-bold;
+}
+
+.animate-zoom {
+    @apply transition ease-in-out duration-300 hover:scale-105;
 }

@@ -1,20 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { BombpartyStrategy } from './bomb-party.strategy';
+import { errors } from '../../error.message';
 
 @Injectable()
 export class GameStrategy {
-  private strategies: MapGameStrategy = {
+  public static strategies: MapGameStrategy = {
     bombparty: BombpartyStrategy,
+    'cowboy-clicker': BombpartyStrategy, // TODO: not implemented
   };
 
   init(strategySlug: string): {
     config: Prisma.JsonObject;
     data: Prisma.JsonObject;
   } {
-    const strategy = this.strategies[strategySlug];
+    const strategy = GameStrategy.strategies[strategySlug];
     if (undefined === strategy) {
-      throw new NotFoundException('game definition not found');
+      throw new NotFoundException(errors.gameDefinitions.notFound);
     }
 
     return new strategy().init();
