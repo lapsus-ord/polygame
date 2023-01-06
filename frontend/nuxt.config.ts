@@ -28,10 +28,8 @@ export default defineNuxtConfig({
   },
   piniaPersistedstate: {
     cookieOptions: {
-      // httpOnly: true,
       sameSite: 'strict',
       secure: true,
-      maxAge: 60 * 60 * 24 * 7,
     },
     storage: 'cookies',
   },

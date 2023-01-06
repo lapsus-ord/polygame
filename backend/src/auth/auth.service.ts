@@ -5,13 +5,14 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Role, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2';
 import { LoginUserDto, RegisterUserDto } from './types/auth.dto';
 import { Tokens } from './types/jwt.type';
 import { errors } from '../error.message';
+import { CookieOptions } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -32,11 +33,7 @@ export class AuthService {
         },
       });
 
-      const tokens = await this.getTokens(
-        createdUser.id,
-        createdUser.username,
-        createdUser.role
-      );
+      const tokens = await this.getTokens(createdUser.id);
       await this.updateRefreshToken(createdUser.id, tokens.refresh_token);
 
       return tokens;
@@ -59,7 +56,7 @@ export class AuthService {
     if (!isSamePassword)
       throw new ForbiddenException(errors.login.credentialsWrong);
 
-    const tokens = await this.getTokens(user.id, user.username, user.role);
+    const tokens = await this.getTokens(user.id);
     await this.updateRefreshToken(user.id, tokens.refresh_token);
 
     return tokens;
@@ -77,31 +74,57 @@ export class AuthService {
       where: { id: userId },
     });
     if (null === user || null === user.refreshToken)
-      throw new ForbiddenException(errors.refreshToken.notBelongToAnyone);
+      throw new ForbiddenException(errors.refreshToken.expired);
 
     const refreshTokenMatches = await argon2.verify(
       user.refreshToken,
       oldRefreshToken
     );
     if (!refreshTokenMatches)
-      throw new ForbiddenException(errors.refreshToken.notMatching);
+      throw new ForbiddenException(errors.refreshToken.expired);
 
-    const tokens = await this.getTokens(user.id, user.username, user.role);
+    const tokens = await this.getTokens(user.id);
     await this.updateRefreshToken(user.id, tokens.refresh_token);
 
     return tokens;
   }
 
-  private async getTokens(
-    userId: number,
-    username: string,
-    role: Role
-  ): Promise<Tokens> {
-    const payload = {
-      sub: userId,
-      username: username,
-      role: role,
+  getRefreshCookieAdd(refreshToken: string): {
+    val: string;
+    options: CookieOptions;
+  } {
+    return {
+      val: refreshToken,
+      options: {
+        httpOnly: true,
+        secure: true,
+        path: '/',
+        maxAge: 604800 * 1000,
+        sameSite: 'strict',
+        domain: this.config.get('COOKIE_DOMAIN') ?? 'localhost',
+      },
     };
+  }
+
+  getRefreshCookieRemove(): {
+    val: string;
+    options: CookieOptions;
+  } {
+    return {
+      val: 'none',
+      options: {
+        httpOnly: true,
+        secure: true,
+        path: '/',
+        maxAge: 0,
+        sameSite: 'strict',
+        domain: this.config.get('COOKIE_DOMAIN') ?? 'localhost',
+      },
+    };
+  }
+
+  private async getTokens(userId: number): Promise<Tokens> {
+    const payload = { sub: userId };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(payload, {

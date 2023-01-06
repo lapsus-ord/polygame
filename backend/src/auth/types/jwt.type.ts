@@ -1,12 +1,11 @@
-import { Role } from '@prisma/client';
-
-export type Tokens = {
+export type AccessToken = {
   access_token: string;
+};
+
+export type Tokens = AccessToken & {
   refresh_token: string;
 };
 
 export type JwtPayload = {
   sub: number;
-  username: string;
-  role: Role;
 };

@@ -14,8 +14,7 @@ export const errors = {
     usernameTaken: 'users.username.taken',
   },
   refreshToken: {
-    notBelongToAnyone: 'refresh_token.no_one',
-    notMatching: 'refresh_token.not_matching',
+    expired: 'refresh_token.expired',
   },
   rooms: {
     notFound: 'room.not_found',

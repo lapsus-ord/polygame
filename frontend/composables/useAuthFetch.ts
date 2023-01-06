@@ -11,12 +11,13 @@ export const useAuthFetch = async (
   return useFetch(config.public.api_base + url, {
     ...options,
     async onRequest({ options }) {
-      if (authStore.accessTokenHasExpired) await refreshTokens();
+      if (authStore.accessTokenHasExpired) await refreshAccessToken();
 
       const bearer = authStore.accessToken
         ? `Bearer ${authStore.accessToken}`
         : '';
 
+      options.credentials = 'include';
       options.headers = {
         ...options.headers,
         Authorization: bearer,
@@ -25,19 +26,15 @@ export const useAuthFetch = async (
   });
 };
 
-const refreshTokens = async () => {
+const refreshAccessToken = async () => {
   const config = useRuntimeConfig();
   const authStore = useAuthStore();
-
-  const bearer = authStore.refreshToken
-    ? `Bearer ${authStore.refreshToken}`
-    : '';
 
   const { data, error } = await useFetch<TokensType>(
     `${config.public.api_base}/auth/refresh`,
     {
-      method: 'get',
-      headers: { Authorization: bearer },
+      method: 'GET',
+      credentials: 'include',
     }
   );
   if (null === data.value) {
@@ -46,5 +43,5 @@ const refreshTokens = async () => {
     return handleFetchError(error.value);
   }
 
-  authStore.init(data.value.access_token, data.value.refresh_token);
+  authStore.init(data.value.access_token);
 };

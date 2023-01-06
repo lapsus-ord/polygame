@@ -32,14 +32,13 @@ export const useUserStore = defineStore(
     const usersForAdmin: Ref<UserType[]> = ref([]);
 
     // Imported stores
-    const authStore = useAuthStore();
     const roomStore = useRoomStore();
     const gameStore = useGameStore();
     const toastStore = useToastStore();
 
     // Getters
     const isLogged = computed(() => {
-      return authStore.isAuthenticated && null !== user.value;
+      return null !== user.value;
     });
 
     const isAdmin = computed(() => {
