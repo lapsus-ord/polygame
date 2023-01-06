@@ -55,7 +55,7 @@ input[type='radio']:checked + .definition-body {
 }
 
 .definition-card .icon {
-  filter: drop-shadow(3px 3px 2px rgb(0 0 0 / 0.4));
+  filter: drop-shadow(2px 2px 1px rgb(0 0 0 / 0.2));
   @apply mt-2 mb-3 flex justify-center;
 }
 

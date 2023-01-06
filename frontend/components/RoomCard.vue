@@ -65,7 +65,9 @@ const userCountPlurals = computed(() =>
 );
 
 const handleDelete = () => {
-  roomStore.deleteRoom(props.room.code);
+  roomStore.deleteRoom(props.room.code).then((result) => {
+    if (result) roomStore.refreshRooms();
+  });
 };
 </script>
 

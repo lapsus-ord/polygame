@@ -74,6 +74,6 @@ const tab = ref(tabs.users);
 
 <style scoped>
 .game-toolbar {
-  @apply hidden md:block h-full;
+  @apply hidden md:block h-full pt-4;
 }
 </style>
