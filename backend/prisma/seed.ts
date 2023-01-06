@@ -36,7 +36,24 @@ async function main() {
       enabled: true,
       color: '#3dbd31',
     }),
+    insertGameDefinition({
+      slug: 'motus',
+      name: 'MUTOS',
+      logo: 'twemoji:letter-q',
+      description: 'Prêt à vous détruire le cerveau ?',
+      enabled: true,
+      color: '#f7b735',
+    }),
+    insertGameDefinition({
+      slug: 'guesswho',
+      name: 'Kiesse',
+      logo: 'twemoji:person-facepalming',
+      description: 'Le vrai Qui est-ce !',
+      enabled: true,
+      color: '#da171d',
+    }),
     insertGameDefinition({ slug: 'lambda-1', name: 'Lambda Game Def 1' }),
+    insertGameDefinition({ slug: 'lambda-2', name: 'Lambda Game Def 2' }),
   ]);
 }
 
