@@ -19,7 +19,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      api_base: '',
+      api_base: process.env.NUXT_PUBLIC_API_BASE || '',
     },
   },
   typescript: {
@@ -27,10 +27,6 @@ export default defineNuxtConfig({
     strict: true,
   },
   piniaPersistedstate: {
-    cookieOptions: {
-      sameSite: 'strict',
-      secure: true,
-    },
-    storage: 'cookies',
+    storage: 'localStorage',
   },
 });

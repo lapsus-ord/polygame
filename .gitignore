@@ -4,6 +4,7 @@
 
 # compiled output
 dist/
+dist
 .output/
 node_modules/
 dbml/
