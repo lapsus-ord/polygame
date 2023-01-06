@@ -1,13 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { BombpartyStrategy } from './bomb-party.strategy';
-import { errors } from '../../error.message';
+import { GameExampleStrategy } from './strategies/game-example.strategy';
+import { errors } from '../error.message';
 
 @Injectable()
 export class GameStrategy {
   public static strategies: MapGameStrategy = {
-    bombparty: BombpartyStrategy,
-    'cowboy-clicker': BombpartyStrategy, // TODO: not implemented
+    bombparty: GameExampleStrategy,
+    'cowboy-clicker': GameExampleStrategy,
+    motus: GameExampleStrategy,
+    guesswho: GameExampleStrategy,
   };
 
   init(strategySlug: string): {

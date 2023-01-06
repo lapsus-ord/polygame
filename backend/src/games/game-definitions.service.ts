@@ -10,7 +10,7 @@ import {
   UpdateDefinitionDto,
 } from './types/game-definition.dto';
 import { errors } from '../error.message';
-import { GameStrategy } from './strategies/game-strategy.service';
+import { GameStrategy } from './game-strategy.service';
 
 @Injectable()
 export class GameDefinitionService {

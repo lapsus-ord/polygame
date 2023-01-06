@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { GameStrategyInterface } from './game-strategy.interface';
 
 @Injectable()
-export class BombpartyStrategy implements GameStrategyInterface {
+export class GameExampleStrategy implements GameStrategyInterface {
   init(): { config: Prisma.JsonObject; data: Prisma.JsonObject } {
     return { config: {}, data: {} };
   }

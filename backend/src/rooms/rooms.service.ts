@@ -9,7 +9,7 @@ import {
 } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRoomDto } from './types/create-room.dto';
-import { GameStrategy } from 'src/games/strategies/game-strategy.service';
+import { GameStrategy } from 'src/games/game-strategy.service';
 import { PrismaRoomType } from './types/rooms.type';
 
 const nanoid = import('nanoid/async');
