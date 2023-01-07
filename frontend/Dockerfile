@@ -11,7 +11,7 @@ RUN yarn install --frozen-lockfile
 # copy rest of the files
 COPY . .
 
-# Build the project
+# build the project
 ARG NUXT_PUBLIC_API_BASE
 RUN yarn generate
 
@@ -22,5 +22,11 @@ FROM nginx:1.23.3-alpine as production
 COPY ./nginx.conf /etc/nginx/nginx.conf
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy dist file from build
-COPY --from=builder /usr/src/nuxt/.output/public /usr/share/nginx/html
+WORKDIR /usr/share/nginx/html
+
+# copy dist file from build
+COPY --from=builder /usr/src/nuxt/.output/public .
+RUN chmod a+r . -R
+
+# run in foreground
+CMD ["nginx", "-g", "daemon off;"]
