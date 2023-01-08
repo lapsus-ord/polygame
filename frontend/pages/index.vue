@@ -111,6 +111,7 @@ await Promise.all([
 }
 
 #your-rooms {
-  @apply border-secondary h-36;
+  min-height: 150px;
+  @apply border-secondary;
 }
 </style>
