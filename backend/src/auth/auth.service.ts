@@ -10,7 +10,12 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2';
 import { LoginUserDto, RegisterUserDto } from './types/auth.dto';
-import { Tokens } from './types/jwt.type';
+import {
+  AccessToken,
+  JwtPayload,
+  RefreshToken,
+  Tokens,
+} from './types/jwt.type';
 import { errors } from '../error.message';
 import { CookieOptions } from 'express';
 
@@ -69,7 +74,10 @@ export class AuthService {
     });
   }
 
-  async refreshTokens(userId: number, oldRefreshToken: string) {
+  async refreshTokens(
+    userId: number,
+    oldRefreshToken: string
+  ): Promise<Tokens> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -83,10 +91,25 @@ export class AuthService {
     if (!refreshTokenMatches)
       throw new ForbiddenException(errors.refreshToken.expired);
 
-    const tokens = await this.getTokens(user.id);
-    await this.updateRefreshToken(user.id, tokens.refresh_token);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const decodedRefresh: { sub: number; iat: number; exp: number } =
+      this.jwt.decode(oldRefreshToken);
+    const expirationTime = (decodedRefresh['exp'] ?? 0) * 1000;
+    const daysBetween = Math.floor((expirationTime - Date.now()) / 86400000);
 
-    return tokens;
+    // update refresh token only if near its expiration
+    if (daysBetween <= 4) {
+      const tokens = await this.getTokens(user.id);
+      await this.updateRefreshToken(user.id, tokens.refresh_token);
+      return tokens;
+    }
+
+    const newAccessToken = await this.newAccessToken({ sub: user.id });
+    return {
+      access_token: newAccessToken,
+      refresh_token: oldRefreshToken,
+    };
   }
 
   getRefreshCookieAdd(refreshToken: string): {
@@ -98,7 +121,7 @@ export class AuthService {
       options: {
         httpOnly: true,
         secure: true,
-        path: '/',
+        path: '/api/v1/auth/refresh',
         maxAge: 604800 * 1000,
         sameSite: 'strict',
         domain: this.config.get('COOKIE_DOMAIN') ?? 'localhost',
@@ -115,7 +138,7 @@ export class AuthService {
       options: {
         httpOnly: true,
         secure: true,
-        path: '/',
+        path: '/api/v1/auth/refresh',
         maxAge: 0,
         sameSite: 'strict',
         domain: this.config.get('COOKIE_DOMAIN') ?? 'localhost',
@@ -127,20 +150,28 @@ export class AuthService {
     const payload = { sub: userId };
 
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwt.signAsync(payload, {
-        expiresIn: '15m',
-        secret: this.config.get<string>('JWT_ACCESS_SECRET'),
-      }),
-      this.jwt.signAsync(payload, {
-        expiresIn: '7d',
-        secret: this.config.get<string>('JWT_REFRESH_SECRET'),
-      }),
+      this.newAccessToken(payload),
+      this.newRefreshToken(payload),
     ]);
 
     return {
       access_token: accessToken,
       refresh_token: refreshToken,
     };
+  }
+
+  private async newAccessToken(payload: JwtPayload): Promise<string> {
+    return this.jwt.signAsync(payload, {
+      expiresIn: '15m',
+      secret: this.config.get<string>('JWT_ACCESS_SECRET'),
+    });
+  }
+
+  private async newRefreshToken(payload: JwtPayload): Promise<string> {
+    return this.jwt.signAsync(payload, {
+      expiresIn: '7d',
+      secret: this.config.get<string>('JWT_REFRESH_SECRET'),
+    });
   }
 
   private async updateRefreshToken(
