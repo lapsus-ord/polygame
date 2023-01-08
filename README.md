@@ -44,12 +44,14 @@ $ make prod-build
 $ make prod-deploy
 ```
 
-3. Go on your browser and enter the http://frontent.example.tld:3005 <br>
+3. Go on your browser and enter the http://frontent.example.tld:3002 <br>
    (The `FRONTEND_BASE` + `HOST_FRONTEND_PORT` from the .env file)
 
 You can check if the containers are running with `docker ps -a` .
 
 4. And finally, if you want to fill your Project with default accounts and games:
+
+> ⚠️ If you want to change them, you can go in your backend container, and modify the file [prisma/seed.ts](./backend/prisma/seed.ts)
 
 ```sh
 $ docker compose exec backend yarn db:seed
@@ -61,8 +63,6 @@ Default accounts:
 | :---: | :------: |
 | admin |  admin   |
 | test  |   test   |
-
-And if you want to change them, you can go to [prisma/seed.ts](./backend/prisma/seed.ts).
 
 <br>
 
@@ -85,6 +85,8 @@ $ cd backend/
 $ yarn start:dev
 $ yarn db:seed # to fill project with fixtures (default accounts and games)
 ```
+
+> ⚠️ If you want to change them, you can go to [prisma/seed.ts](./backend/prisma/seed.ts)
 
 Default accounts:
 
